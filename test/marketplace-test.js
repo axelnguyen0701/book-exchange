@@ -24,7 +24,7 @@ describe("BookMarketplace", () => {
 
         const [_, buyerAddress] = await ethers.getSigners();
 
-        items = bookMarketplace.fetchListings();
+        items = await bookMarketplace.fetchListings();
         items = await Promise.all(
             items.map(async (i) => {
                 const tokenUri = await bookMarketplace.tokenURI(i.tokenId);
