@@ -90,34 +90,33 @@ contract BookMarketplace is ERC721URIStorage {
             "Price must be equal to listing price"
         );
 
-        Bid[] memory bidList;
+        Listing storage listing = idToMarketItem[tokenId];
+        Bid memory emptyBid;
+        listing.tokenId = tokenId;
+        listing.seller = payable(msg.sender);
+        listing.owner = payable(address(this));
+        listing.instantPrice = instantPrice;
+        listing.startingPrice = startingPrice;
+        listing.allowBid = allowBid;
+        listing.bidList.push(emptyBid);
 
-        idToMarketItem[tokenId] = Listing(
-            tokenId,
-            payable(msg.sender),
-            payable(address(this)),
-            instantPrice,
-            startingPrice,
-            allowBid,
-            bidList,
-            false
-        );
+        idToMarketItem[tokenId] = listing;
 
         _transfer(msg.sender, address(this), tokenId);
-        emit ListingCreated(
-            tokenId,
-            msg.sender,
-            address(this),
-            instantPrice,
-            startingPrice,
-            allowBid,
-            bidList,
-            false
-        );
+        // emit ListingCreated(
+        //     tokenId,
+        //     msg.sender,
+        //     address(this),
+        //     instantPrice,
+        //     startingPrice,
+        //     allowBid,
+        //     [],
+        //     false
+        // );
     }
 
     /* Returns all unsold market items */
-    function fetchMarketItems() public view returns (Listing[] memory) {
+    function fetchListings() public view returns (Listing[] memory) {
         uint256 itemCount = _tokenIds.current();
         uint256 unsoldItemCount = _tokenIds.current() - _itemsSold.current();
         uint256 currentIndex = 0;
