@@ -13,9 +13,11 @@ contract BookMarketplace is ERC721URIStorage {
     Counters.Counter private _itemsSold;
 
     uint256 listingPrice = 0.025 ether;
-    address payable owner;
+    address payable marketOwner;
 
     mapping(uint256 => Listing) private idToMarketItem;
+
+    /* structs */
 
     struct Bid {
         address bidder;
@@ -33,6 +35,8 @@ contract BookMarketplace is ERC721URIStorage {
         bool sold;
     }
 
+    /* events */
+
     event ListingCreated(
         uint256 indexed tokenId,
         address seller,
@@ -44,15 +48,78 @@ contract BookMarketplace is ERC721URIStorage {
         bool sold
     );
 
+    event ListingUpdated(
+        uint256 indexed tokenId,
+        address seller,
+        address owner,
+        uint256 instantPrice,
+        uint256 startingPrice,
+        bool allowBid,
+        Bid[] bidList,
+        bool sold
+    );
+
+    /* modifiers */
+    
+    
+    // Modifier prevents function from being called by anyone other than the market owner
+    modifier onlyMarketOwner() {
+        require(
+            marketOwner == msg.sender,
+            "only the marketplace owner can call this function."
+        );
+        _;
+    }
+
+    /* constructor */
+
     constructor() ERC721("BookExchange Tokens", "BOOK") {
-        owner = payable(msg.sender);
+        marketOwner = payable(msg.sender);
+    }
+
+    /* functions */
+
+    // Adds bids to a bid list by tokenId
+
+    function addBid(uint256 tokenId, uint256 bidAmount) public payable {
+        Listing storage listing = idToMarketItem[tokenId];
+        require(
+            listing.allowBid == true,
+            "This item does not allow bids."
+        );
+        require(
+            bidAmount >= listing.instantPrice,
+            "Bid must be greater than or equal to the current price."
+        );
+        require(
+            msg.value == bidAmount,
+            "Bid amount must be equal to the amount sent."
+        );
+        Bid memory newBid;
+        newBid.bidder = msg.sender;
+        newBid.bidAmount = bidAmount;
+        listing.bidList.push(newBid);
+        idToMarketItem[tokenId] = listing;
+    }
+
+    // Returns the bid list for a given tokenId
+    function getBidList(uint256 tokenId) public view returns (Bid[] memory) {
+        Listing storage listing = idToMarketItem[tokenId];
+        return listing.bidList;
+    }
+
+    // marks a listing as sold
+    function markListingAsSold(uint256 tokenId) public {
+        Listing storage listing = idToMarketItem[tokenId];
+        listing.sold = true;
+        idToMarketItem[tokenId] = listing;
     }
 
     /* Updates the listing price of the contract */
-    function updateListingPrice(uint256 _listingPrice) public payable {
+    function updateListingPrice(uint256 _listingPrice) public payable onlyMarketOwner {
         require(
-            owner == msg.sender,
-            "Only marketplace owner can update listing price."
+            _listingPrice > 0,
+            "Listing price must be greater than 0."
         );
         listingPrice = _listingPrice;
     }
@@ -62,6 +129,7 @@ contract BookMarketplace is ERC721URIStorage {
         return listingPrice;
     }
 
+    
     /* Mints a token and lists it in the marketplace */
     function createToken(
         string memory tokenURI,
