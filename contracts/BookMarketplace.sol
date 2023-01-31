@@ -79,8 +79,20 @@ contract BookMarketplace is ERC721URIStorage {
 
     /* functions */
 
-    // Adds bids to a bid list by tokenId
+    // change the price of a listing
+    function updateInstantPrice(uint256 tokenId, uint256 newPrice) public payable onlyMarketOwner {
+        Listing storage listing = idToMarketItem[tokenId];
+        listing.instantPrice = newPrice;
+        idToMarketItem[tokenId] = listing;
+    }
 
+    // get the price of a listing
+    function getInstantPrice(uint256 tokenId) public view returns (uint256) {
+        Listing storage listing = idToMarketItem[tokenId];
+        return listing.instantPrice;
+    }
+
+    // Adds bids to a bid list by tokenId
     function addBid(uint256 tokenId, uint256 bidAmount) public payable {
         Listing storage listing = idToMarketItem[tokenId];
         require(
@@ -93,7 +105,7 @@ contract BookMarketplace is ERC721URIStorage {
         );
         require(
             msg.value == bidAmount,
-            "Bid amount must be equal to the amount sent."
+            "Bid amount must be equal to the amount sent. Amount sent: " 
         );
         Bid memory newBid;
         newBid.bidder = msg.sender;
@@ -109,7 +121,7 @@ contract BookMarketplace is ERC721URIStorage {
     }
 
     // marks a listing as sold
-    function markListingAsSold(uint256 tokenId) public {
+    function markListingAsSold(uint256 tokenId) public onlyMarketOwner {
         Listing storage listing = idToMarketItem[tokenId];
         listing.sold = true;
         idToMarketItem[tokenId] = listing;
@@ -143,7 +155,7 @@ contract BookMarketplace is ERC721URIStorage {
         _mint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
         createMarketItem(newTokenId, instantPrice, startingPrice, allowBid);
-        return newTokenId;
+        return _tokenIds.current();
     }
 
     function createMarketItem(
@@ -169,18 +181,23 @@ contract BookMarketplace is ERC721URIStorage {
         listing.bidList.push(emptyBid);
 
         idToMarketItem[tokenId] = listing;
-
+        
         _transfer(msg.sender, address(this), tokenId);
-        // emit ListingCreated(
-        //     tokenId,
-        //     msg.sender,
-        //     address(this),
-        //     instantPrice,
-        //     startingPrice,
-        //     allowBid,
-        //     [],
-        //     false
-        // );
+        emit ListingCreated(
+            tokenId,
+            msg.sender,
+            address(this),
+            instantPrice,
+            startingPrice,
+            allowBid,
+            listing.bidList,
+            false
+        );
+    }
+
+    /* get the listing for a given token id */
+    function getListingByTokenId(uint256 tokenId) public view returns (Listing memory) {
+        return idToMarketItem[tokenId];
     }
 
     /* Returns all unsold market items */
