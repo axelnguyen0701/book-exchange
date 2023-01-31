@@ -1,6 +1,6 @@
 const { assert } = require("chai");
-const { getClientBuildManifest } = require("next/dist/client/route-loader");
-const { abi } = require("../artifacts/contracts/BookMarketplace.sol/BookMarketplace.json");
+const { expect } = require("chai");
+
 describe("BookMarketplace", () => {
     // global test variables
     let BookMarketplace;
@@ -8,7 +8,7 @@ describe("BookMarketplace", () => {
     let defaultListingPrice;
     let defaultInstantPrice;
     let defaultStartingPrice;
-    let defaultAllowBid = false;
+    let defaultAllowBid = Boolean(0);
     let defaultTokenURI = "https://www.mytokenlocation.com";
 
     before(async () => {
@@ -66,7 +66,7 @@ describe("BookMarketplace", () => {
             { value: defaultListingPrice }
         );
         const sender = txResponse.from;     
-        const id = await getIdFromCreateTxRespons(txResponse);
+        const id = await getIdFromCreateTxResponse(txResponse);
         
         const listing = await bookMarketplace.getListingByTokenId(id);
 
@@ -97,7 +97,7 @@ describe("BookMarketplace", () => {
             defaultAllowBid,
             { value: defaultListingPrice }
         );
-        const listingId = await getIdFromCreateTxRespons(txResponse);
+        const listingId = await getIdFromCreateTxResponse(txResponse);
         
         // check price in listing
         let price = await bookMarketplace.getInstantPrice(listingId);
@@ -116,7 +116,7 @@ describe("BookMarketplace", () => {
             defaultTokenURI,
             defaultInstantPrice,
             defaultStartingPrice,
-            true,
+            Boolean(true),
             { value: defaultListingPrice }
         );
 
@@ -124,36 +124,53 @@ describe("BookMarketplace", () => {
         const [_, buyer] = await ethers.getSigners();
         const buyerMarketConnection = await bookMarketplace.connect(buyer);
 
-        const listingId = await getIdFromCreateTxRespons(txResponse);
+        const listingId = await getIdFromCreateTxResponse(txResponse);
+        const listing = await bookMarketplace.getListingByTokenId(listingId);
+        console.log(listing);
         const oldBids = await bookMarketplace.getBidList(listingId);
-        console.log("oldBids: ", oldBids);
+        // console.log("oldBids: ", oldBids);
 
         await buyerMarketConnection.addBid(listingId, bidPrice, { value: bidPrice });
         const newBids = await bookMarketplace.getBidList(listingId);
-        console.log("newBids: ", newBids);
+        // console.log("newBids: ", newBids);
 
         assert.equal(newBids.length, oldBids.length + 1);
     });
 
-    it("Should fail to accept a bid if is false", async () => {
+    it("Should not be able to accept a bid if is false", async () => {
         const bidPrice = ethers.utils.parseUnits("0", "ether");
 
         const txResponse = await bookMarketplace.createToken(
             defaultTokenURI,
             defaultInstantPrice,
             defaultStartingPrice,
-            false,
+            Boolean(false),
             { value: defaultListingPrice }
         );
 
-        const listingId = await getIdFromCreateTxRespons(txResponse);
-        bookMarketplace.addBid(listingId, bidPrice, { value: bidPrice });
+        const listingId = await getIdFromCreateTxResponse(txResponse);
+
+        // get new signer
+        const [_, buyer] = await ethers.getSigners();
+        const buyerMarketConnection = await bookMarketplace.connect(buyer);
+        
+        let error;
+
+        try {
+            await buyerMarketConnection.addBid(listingId, bidPrice, { value: bidPrice });
+        }
+        catch (e) {
+            error = e.message;
+        }
+
+        assert.equal(error, "VM Exception while processing transaction: reverted with reason string 'This item does not allow bids.'");
+
+    });
 });
 
-async function getIdFromCreateTxRespons(txResponse) {
+async function getIdFromCreateTxResponse(txResponse) {
     const txReceipt = await txResponse.wait();
     const events = txReceipt.events;
     const id = events.filter((e) => e.event === "ListingCreated")[0].args[0];
     return id;
 }
-});

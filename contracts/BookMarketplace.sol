@@ -105,7 +105,7 @@ contract BookMarketplace is ERC721URIStorage {
         );
         require(
             msg.value == bidAmount,
-            "Bid amount must be equal to the amount sent. Amount sent: " 
+            "Bid amount must be equal to the amount sent." 
         );
         Bid memory newBid;
         newBid.bidder = msg.sender;
