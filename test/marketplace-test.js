@@ -1,5 +1,4 @@
 const { assert } = require("chai");
-const { expect } = require("chai");
 
 describe("BookMarketplace", () => {
     // global test variables
@@ -8,7 +7,7 @@ describe("BookMarketplace", () => {
     let defaultListingPrice;
     let defaultInstantPrice;
     let defaultStartingPrice;
-    let defaultAllowBid = Boolean(0);
+    let defaultAllowBid = true;
     let defaultTokenURI = "https://www.mytokenlocation.com";
 
     before(async () => {
@@ -31,13 +30,8 @@ describe("BookMarketplace", () => {
         
         //Create a token
         
-        await bookMarketplace.createToken(
-            defaultTokenURI,
-            defaultInstantPrice,
-            defaultStartingPrice,
-            defaultAllowBid,
-            { value: defaultListingPrice }
-        );
+        await getDefaultListing();
+
         items = await bookMarketplace.fetchListings();
         items = await Promise.all(
             items.map(async (i) => {
@@ -58,13 +52,7 @@ describe("BookMarketplace", () => {
     });
 
     it("Should be able to fetch a listing by id", async () => {
-        const txResponse = await bookMarketplace.createToken(
-            defaultTokenURI,
-            defaultInstantPrice,
-            defaultStartingPrice,
-            defaultAllowBid,
-            { value: defaultListingPrice }
-        );
+        const txResponse = await getDefaultListing();
         const sender = txResponse.from;     
         const id = await getIdFromCreateTxResponse(txResponse);
         
@@ -86,6 +74,30 @@ describe("BookMarketplace", () => {
         assert.equal(fetchedPrice.toString(), newPrice.toString()) && 
         assert.notEqual(fetchedPrice.toString(), oldPrice.toString());
     });
+
+    it("If not owner, fail to update listing price", async () => {
+        const oldPrice = await bookMarketplace.getListingPrice();
+        const newPrice = ethers.utils.parseUnits((oldPrice + 1).toString(), "ether");
+
+        // get new signer
+        const [_, buyer] = await ethers.getSigners();
+
+        const buyerMarketConnection = await bookMarketplace.connect(buyer);
+
+       let error; 
+
+       try {
+            await buyerMarketConnection.updateListingPrice(newPrice);
+       }
+       catch(e) {
+            error = e.message;
+       }
+       const fetchedPrice = await(bookMarketplace.getListingPrice());
+       
+       assert.equal(oldPrice.toString(), fetchedPrice.toString());
+       assert.equal(error, "VM Exception while processing transaction: reverted with reason string 'Only the marketplace owner can call this function.'"
+       )
+    })
 
     it("Should be able to edit listsing instantPrice", async () => {
         const newPrice = ethers.utils.parseUnits("0.5", "ether");
@@ -125,8 +137,7 @@ describe("BookMarketplace", () => {
         const buyerMarketConnection = await bookMarketplace.connect(buyer);
 
         const listingId = await getIdFromCreateTxResponse(txResponse);
-        const listing = await bookMarketplace.getListingByTokenId(listingId);
-        console.log(listing);
+
         const oldBids = await bookMarketplace.getBidList(listingId);
         // console.log("oldBids: ", oldBids);
 
@@ -163,9 +174,101 @@ describe("BookMarketplace", () => {
             error = e.message;
         }
 
-        assert.equal(error, "VM Exception while processing transaction: reverted with reason string 'This item does not allow bids.'");
+        assert.equal(
+            error, 
+            "VM Exception while processing transaction: reverted with reason string 'This item does not allow bids.'"
+            );
 
     });
+
+    it("Should not be able to add more bids after item is sold", async () => {
+        const bidPrice = ethers.utils.parseUnits("1", "ether");
+        const listingId = getIdFromCreateTxResponse(await getDefaultListing());
+        
+        // get new signer
+        const [_, buyer] = await ethers.getSigners();
+        const buyerMarketConnection = await bookMarketplace.connect(buyer);
+        
+        await buyerMarketConnection.addBid(listingId, bidPrice, { value: bidPrice });
+
+        await bookMarketplace.markListingAsSold(listingId);
+
+        const newBidPrice = ethers.utils.parseUnits("2", "ether");
+
+        let error;
+
+        try {
+            await buyerMarketConnection.addBid(listingId, newBidPrice, { value: newBidPrice });
+        }
+        catch (e) {
+            error = e.message;
+        }
+        
+        assert.equal(
+            error,
+            "VM Exception while processing transaction: reverted with reason string 'This item has been sold.'"
+            );
+
+    });
+
+    it("Only market owner should update 'sold'", async () => {
+        // get new signer
+        const [_, buyer] = await ethers.getSigners();
+        const buyerMarketConnection = await bookMarketplace.connect(buyer);
+
+        const listingId = getIdFromCreateTxResponse(await getDefaultListing());
+
+        let error;
+
+        try {
+            await buyerMarketConnection.markListingAsSold(listingId);
+        }
+        catch (e) {
+            error = e.message;
+        }
+
+        assert.equal(
+            error, 
+            "VM Exception while processing transaction: reverted with reason string 'Only the marketplace owner can call this function.'"
+            )
+        })
+
+    it("Should not be able to add bid if value does not equal price", async () => {
+        const bidPrice = ethers.utils.parseUnits("1", "ether");
+        const sentValue = ethers.utils.parseUnits("0.9", "ether");
+        const listingId = getIdFromCreateTxResponse(await getDefaultListing());
+        
+        // get new signer
+        const [_, buyer] = await ethers.getSigners();
+        const buyerMarketConnection = await bookMarketplace.connect(buyer);
+
+        let error;
+
+        try {
+            await buyerMarketConnection.addBid(listingId, bidPrice, { value: sentValue });
+        }
+        catch (e) {
+            error = e.message;
+        }
+        
+        assert.equal(
+            error,
+            "VM Exception while processing transaction: reverted with reason string 'Bid amount must be equal to the amount sent.'"
+            );
+    }
+    )
+
+    async function getDefaultListing() {
+        const txResponse = await bookMarketplace.createToken(
+            defaultTokenURI,
+            defaultInstantPrice,
+            defaultStartingPrice,
+            defaultAllowBid,
+            { value: defaultListingPrice }
+        );
+    
+        return txResponse
+    }
 });
 
 async function getIdFromCreateTxResponse(txResponse) {

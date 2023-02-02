@@ -66,7 +66,7 @@ contract BookMarketplace is ERC721URIStorage {
     modifier onlyMarketOwner() {
         require(
             marketOwner == msg.sender,
-            "only the marketplace owner can call this function."
+            "Only the marketplace owner can call this function."
         );
         _;
     }
@@ -78,6 +78,10 @@ contract BookMarketplace is ERC721URIStorage {
     }
 
     /* functions */
+
+    function getMarketOwnerAddress() public view returns(address) {
+        return marketOwner;
+    }
 
     // change the price of a listing
     function updateInstantPrice(uint256 tokenId, uint256 newPrice) public payable onlyMarketOwner {
@@ -98,6 +102,10 @@ contract BookMarketplace is ERC721URIStorage {
         require(
             listing.allowBid == true,
             "This item does not allow bids."
+        );
+        require(
+            listing.sold == false,
+            "This item has been sold."
         );
         require(
             bidAmount >= listing.instantPrice,
