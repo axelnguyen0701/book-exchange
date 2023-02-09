@@ -119,7 +119,6 @@ contract BookMarketplace is ERC721URIStorage {
         newBid.bidder = msg.sender;
         newBid.bidAmount = bidAmount;
         listing.bidList.push(newBid);
-        // idToMarketItem[tokenId] = listing;
     }
 
     // Returns the bid list for a given tokenId
@@ -138,7 +137,7 @@ contract BookMarketplace is ERC721URIStorage {
     /* Updates the listing price of the contract */
     function updateListingPrice(uint256 _listingPrice) public onlyMarketOwner {
         require(
-            _listingPrice > 0,
+            _listingPrice >= 0,
             "Listing price must be greater than 0."
         );
         listingPrice = _listingPrice;
