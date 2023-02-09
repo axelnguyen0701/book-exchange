@@ -119,7 +119,7 @@ contract BookMarketplace is ERC721URIStorage {
         newBid.bidder = msg.sender;
         newBid.bidAmount = bidAmount;
         listing.bidList.push(newBid);
-        idToMarketItem[tokenId] = listing;
+        // idToMarketItem[tokenId] = listing;
     }
 
     // Returns the bid list for a given tokenId
