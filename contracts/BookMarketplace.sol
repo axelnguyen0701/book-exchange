@@ -136,7 +136,7 @@ contract BookMarketplace is ERC721URIStorage {
     }
 
     /* Updates the listing price of the contract */
-    function updateListingPrice(uint256 _listingPrice) public payable onlyMarketOwner {
+    function updateListingPrice(uint256 _listingPrice) public onlyMarketOwner {
         require(
             _listingPrice > 0,
             "Listing price must be greater than 0."
