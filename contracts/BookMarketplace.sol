@@ -13,6 +13,8 @@ contract BookMarketplace is ERC721URIStorage {
     Counters.Counter private _itemsSold;
 
     uint256 listingPrice = 0.025 ether;
+    uint256 bidPrice = 0.001 ether;
+
     address payable marketOwner;
 
     mapping(uint256 => Listing) private idToMarketItem;
@@ -111,10 +113,7 @@ contract BookMarketplace is ERC721URIStorage {
             bidAmount >= listing.instantPrice,
             "Bid must be greater than or equal to the current price."
         );
-        require(
-            msg.value == bidAmount,
-            "Bid amount must be equal to the amount sent." 
-        );
+        
         Bid memory newBid;
         newBid.bidder = msg.sender;
         newBid.bidAmount = bidAmount;

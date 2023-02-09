@@ -231,32 +231,7 @@ describe("BookMarketplace", () => {
             error, 
             "VM Exception while processing transaction: reverted with reason string 'Only the marketplace owner can call this function.'"
             )
-        })
-
-    it("Should not be able to add bid if value does not equal price", async () => {
-        const bidPrice = ethers.utils.parseUnits("1", "ether");
-        const sentValue = ethers.utils.parseUnits("0.9", "ether");
-        const listingId = getIdFromCreateTxResponse(await getDefaultListing());
-        
-        // get new signer
-        const [_, buyer] = await ethers.getSigners();
-        const buyerMarketConnection = await bookMarketplace.connect(buyer);
-
-        let error;
-
-        try {
-            await buyerMarketConnection.addBid(listingId, bidPrice, { value: sentValue });
-        }
-        catch (e) {
-            error = e.message;
-        }
-        
-        assert.equal(
-            error,
-            "VM Exception while processing transaction: reverted with reason string 'Bid amount must be equal to the amount sent.'"
-            );
-    }
-    )
+        });
 
     it("Should be able to disallow bids", async () => {
         const listingId = getIdFromCreateTxResponse(await getDefaultListing());
