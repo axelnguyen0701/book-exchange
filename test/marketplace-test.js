@@ -258,6 +258,34 @@ describe("BookMarketplace", () => {
     }
     )
 
+    it("Should be able to disallow bids", async () => {
+        const listingId = getIdFromCreateTxResponse(await getDefaultListing());
+        const bidPrice = ethers.utils.parseUnits("1", "ether");
+        
+        // get new signer
+        const [_, buyer] = await ethers.getSigners();
+        const buyerMarketConnection = await bookMarketplace.connect(buyer);
+
+        await buyerMarketConnection.addBid(listingId, bidPrice, { value: bidPrice });
+
+        bookMarketplace.updateAllowBid(listingId, Boolean(false));
+
+        let error;
+
+        try {
+            await buyerMarketConnection.addBid(listingId, bidPrice, { value: bidPrice });
+        }
+        catch (e) {
+            error = e.message;
+        }
+
+        assert.equal(
+            error,
+            "VM Exception while processing transaction: reverted with reason string 'This item does not allow bids.'"
+        );
+
+    });
+
     async function getDefaultListing() {
         const txResponse = await bookMarketplace.createToken(
             defaultTokenURI,

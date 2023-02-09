@@ -133,6 +133,13 @@ contract BookMarketplace is ERC721URIStorage {
         listing.sold = true;
         idToMarketItem[tokenId] = listing;
     }
+    
+    /* Updating the allowed bid is required in bid closing sequence */
+    function updateAllowBid(uint256 tokenId, bool allow) public onlyMarketOwner {
+        Listing storage listing = idToMarketItem[tokenId];
+        listing.allowBid = allow;
+        idToMarketItem[tokenId] = listing;
+    }
 
     /* Updates the listing price of the contract */
     function updateListingPrice(uint256 _listingPrice) public onlyMarketOwner {
