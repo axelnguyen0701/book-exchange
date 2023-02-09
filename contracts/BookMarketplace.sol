@@ -13,7 +13,7 @@ contract BookMarketplace is ERC721URIStorage {
     Counters.Counter private _itemsSold;
 
     uint256 listingPrice = 0.025 ether;
-    uint256 bidPrice = 0.001 ether;
+    uint256 biddingPrice = 0.001 ether;
 
     address payable marketOwner;
 
@@ -113,6 +113,12 @@ contract BookMarketplace is ERC721URIStorage {
             bidAmount >= listing.instantPrice,
             "Bid must be greater than or equal to the current price."
         );
+        if(hasUserBid(tokenId, msg.sender) == false) {
+            require(
+                msg.value == biddingPrice,
+                "Bid price must be paid on first bid: 0.001 ether."
+            );
+        }
         
         Bid memory newBid;
         newBid.bidder = msg.sender;
@@ -124,6 +130,17 @@ contract BookMarketplace is ERC721URIStorage {
     function getBidList(uint256 tokenId) public view returns (Bid[] memory) {
         Listing storage listing = idToMarketItem[tokenId];
         return listing.bidList;
+    }
+
+    // checks is a user has bid
+    function hasUserBid(uint256 tokenId, address user) public view returns (bool) {
+        Listing storage listing = idToMarketItem[tokenId];
+        for (uint i = 0; i < listing.bidList.length; i++) {
+            if (listing.bidList[i].bidder == user) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // marks a listing as sold
@@ -153,6 +170,21 @@ contract BookMarketplace is ERC721URIStorage {
     function getListingPrice() public view returns (uint256) {
         return listingPrice;
     }
+
+    /* Updates the bid price of the contract */
+    function updateBiddingPrice(uint256 _biddingPrice) public onlyMarketOwner {
+        require(
+            _biddingPrice >= 0,
+            "Bid price must be greater than or equal to 0."
+        );
+        biddingPrice = _biddingPrice;
+    }
+
+    /* Returns the bid price of the contract */
+    function getBiddingPrice() public view returns (uint256) {
+        return biddingPrice;
+    }
+
 
     
     /* Mints a token and lists it in the marketplace */
