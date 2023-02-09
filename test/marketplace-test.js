@@ -270,6 +270,51 @@ describe("BookMarketplace", () => {
         it("Should be able to bid for free on second bid", async () => {
             const firstBid = ethers.utils.parseUnits("1", "ether");
             const secondBid = ethers.utils.parseUnits("2", "ether");
+            const secondBuyerBid = ethers.utils.parseUnits("1.5", "ether");
+    
+            const listingId = await getIdFromCreateTxResponse(await getDefaultListing());
+    
+            // get new signer
+            const [_, buyer, secondBuyer] = await ethers.getSigners();
+            const buyerMarketConnection = await bookMarketplace.connect(buyer);
+
+            const secondBuyerMarketConnection = await bookMarketplace.connect(secondBuyer);
+
+            await buyerMarketConnection.addBid(listingId, firstBid, { value: defaultBiddingPrice });
+            await secondBuyerMarketConnection.addBid(listingId, secondBuyerBid, { value: defaultBiddingPrice });
+            await buyerMarketConnection.addBid(listingId, secondBid, { value: 0 });
+        });
+
+        it("Should not be able to bid if already highest bidder", async () => {
+            const bidPrice = ethers.utils.parseUnits("1", "ether");
+            const secondBidPrice = ethers.utils.parseUnits("2", "ether");
+    
+            const listingId = await getIdFromCreateTxResponse(await getDefaultListing());
+    
+            // get new signer
+            const [_, buyer] = await ethers.getSigners();
+            const buyerMarketConnection = await bookMarketplace.connect(buyer);
+    
+            await buyerMarketConnection.addBid(listingId, bidPrice, { value: defaultBiddingPrice });
+    
+            let error;
+    
+            try {
+                await buyerMarketConnection.addBid(listingId, secondBidPrice, { value: 0 });
+            }
+            catch (e) {
+                error = e.message;
+            }
+    
+            assert.equal(
+                error, 
+                "VM Exception while processing transaction: reverted with reason string 'Highest bidder cannot bid again.'"
+                );
+        });
+
+        it("Bidding price should be 0 on second bid", async () => {
+            const firstBid = ethers.utils.parseUnits("1", "ether");
+            const secondBid = ethers.utils.parseUnits("2", "ether");
     
             const listingId = await getIdFromCreateTxResponse(await getDefaultListing());
     
@@ -278,7 +323,19 @@ describe("BookMarketplace", () => {
             const buyerMarketConnection = await bookMarketplace.connect(buyer);
     
             await buyerMarketConnection.addBid(listingId, firstBid, { value: defaultBiddingPrice });
-            await buyerMarketConnection.addBid(listingId, secondBid, { value: 0 });
+            
+            let error;
+            try {
+                await buyerMarketConnection.addBid(listingId, secondBid, { value: defaultBiddingPrice });
+            }
+            catch (e) {
+                error = e.message;
+            }
+
+            assert.equal(
+                error,
+                "VM Exception while processing transaction: reverted with reason string 'Bid price must be 0 ether after first bid.'"
+            );
         });
     
         it("Should not be able to add more bids after item is sold", async () => {
@@ -336,6 +393,52 @@ describe("BookMarketplace", () => {
                 "VM Exception while processing transaction: reverted with reason string 'This item does not allow bids.'"
             );
     
+        });
+
+        it("If bid amount is less than current bid, should not be able to bid", async () => {
+            const firstBid = ethers.utils.parseUnits("10", "ether");
+            const secondBid = ethers.utils.parseUnits("5", "ether");
+    
+            const listingId = await getIdFromCreateTxResponse(await getDefaultListing());
+    
+            // get new signer
+            const [_, buyer] = await ethers.getSigners();
+            const buyerMarketConnection = await bookMarketplace.connect(buyer);
+    
+            await buyerMarketConnection.addBid(listingId, firstBid, { value: defaultBiddingPrice });
+    
+            let error;
+    
+            try {
+                await buyerMarketConnection.addBid(listingId, secondBid, { value: 0 });
+            }
+            catch (e) {
+                error = e.message;
+            }
+    
+            assert.equal(
+                error,
+                "VM Exception while processing transaction: reverted with reason string 'Bid must be greater than the current highest bid.'"
+            );
+    
+        });
+        it("Seller cannot bid on own listing", async () => {
+            const bidPrice = ethers.utils.parseUnits("1", "ether");
+            const listingId = getIdFromCreateTxResponse(await getDefaultListing());
+    
+            let error;
+    
+            try {
+                await bookMarketplace.addBid(listingId, bidPrice, { value: defaultBiddingPrice });
+            }
+            catch (e) {
+                error = e.message;
+            }
+    
+            assert.equal(
+                error,
+                "VM Exception while processing transaction: reverted with reason string 'Seller cannot bid on their own listing.'"
+            );
         });
     });
     

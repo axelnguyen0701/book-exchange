@@ -119,6 +119,25 @@ contract BookMarketplace is ERC721URIStorage {
                 "Bid price must be paid on first bid: 0.001 ether."
             );
         }
+        else {
+            require(
+                msg.value == 0,
+                "Bid price must be 0 ether after first bid."
+            );
+        }
+        require(
+            bidAmount > getHighestBid(tokenId).bidAmount,
+            "Bid must be greater than the current highest bid."
+        );
+        require(
+            msg.sender != listing.seller,
+            "Seller cannot bid on their own listing."
+        );
+        require(
+            msg.sender != getHighestBidder(tokenId),
+            "Highest bidder cannot bid again."
+        );
+
         
         Bid memory newBid;
         newBid.bidder = msg.sender;
@@ -141,6 +160,31 @@ contract BookMarketplace is ERC721URIStorage {
             }
         }
         return false;
+    }
+
+    // Returns the highest bid for a given tokenId
+    function getHighestBid(uint256 tokenId) public view returns (Bid memory) {
+        Listing storage listing = idToMarketItem[tokenId];
+        Bid memory highestBid;
+        for (uint i = 0; i < listing.bidList.length; i++) {
+            if (listing.bidList[i].bidAmount > highestBid.bidAmount) {
+                highestBid = listing.bidList[i];
+            }
+        }
+        return highestBid;
+    }
+
+    // Returns the user who placed the highest bid for a given tokenId
+    // Note: Maybe combine this functionality with the getHighestBid function to save gas
+    function getHighestBidder(uint256 tokenId) public view returns (address) {
+        Listing storage listing = idToMarketItem[tokenId];
+        Bid memory highestBid;
+        for (uint i = 0; i < listing.bidList.length; i++) {
+            if (listing.bidList[i].bidAmount > highestBid.bidAmount) {
+                highestBid = listing.bidList[i];
+            }
+        }
+        return highestBid.bidder;
     }
 
     // marks a listing as sold
