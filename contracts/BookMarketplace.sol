@@ -138,6 +138,10 @@ contract BookMarketplace is ERC721URIStorage {
             "Highest bidder cannot bid again."
         );
 
+        //if user has not bid, transfer bidding price to market owner
+        if(hasUserBid(tokenId, msg.sender) == false) {
+            payable(marketOwner).transfer(biddingPrice);
+        }
         
         Bid memory newBid;
         newBid.bidder = msg.sender;
