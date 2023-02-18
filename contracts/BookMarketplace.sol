@@ -86,7 +86,7 @@ contract BookMarketplace is ERC721URIStorage {
     }
 
     // change the price of a listing
-    function updateInstantPrice(uint256 tokenId, uint256 newPrice) public payable onlyMarketOwner {
+    function updateInstantPrice(uint256 tokenId, uint256 newPrice) public onlyMarketOwner {
         Listing storage listing = idToMarketItem[tokenId];
         listing.instantPrice = newPrice;
         idToMarketItem[tokenId] = listing;
