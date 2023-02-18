@@ -140,7 +140,8 @@ contract BookMarketplace is ERC721URIStorage {
 
         //if user has not bid, transfer bidding price to market owner
         if(hasUserBid(tokenId, msg.sender) == false) {
-            payable(marketOwner).transfer(biddingPrice);
+            (bool success, ) = marketOwner.call{value: biddingPrice}("");
+            require(success, "Transfer failed.");
         }
         
         Bid memory newBid;
