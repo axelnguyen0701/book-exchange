@@ -307,7 +307,7 @@ contract BookMarketplace is ERC721URIStorage {
       idToMarketItem[tokenId].seller = payable(address(0));
       _itemsSold.increment();
       _transfer(address(this), msg.sender, tokenId);
-      payable(owner).transfer(listingPrice);
+      payable(marketOwner).transfer(listingPrice);
       payable(seller).transfer(msg.value);
     }
 

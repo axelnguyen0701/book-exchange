@@ -111,10 +111,6 @@ describe("BookMarketplace", () => {
 
             await getDefaultListing();
 
-            await bookMarketplace
-                .connect(buyerAddress)
-                .createMarketSale(1, { value: auctionPrice });
-
             items = await bookMarketplace.fetchListings();
             items = await Promise.all(
                 items.map(async (i) => {
@@ -131,8 +127,20 @@ describe("BookMarketplace", () => {
                     return item;
                 })
             );
+        });
 
-            myNFTs = await bookMarketplace.connect(buyerAddress).fetchMyNFTs();
+        it("Close an instant listing", async () => {
+            const auctionPrice = ethers.utils.parseUnits("1", "ether");
+            //Connect buyer address
+            const [_, buyer] = await ethers.getSigners();
+
+            //Close sale
+            await bookMarketplace
+                .connect(buyer)
+                .createMarketSale(1, { value: auctionPrice });
+
+            //Fetch sale
+            myNFTs = await bookMarketplace.connect(buyer).fetchMyNFTs();
             myNFTs = await Promise.all(
                 myNFTs.map(async (i) => {
                     const tokenUri = await bookMarketplace.tokenURI(i.tokenId);
@@ -148,7 +156,14 @@ describe("BookMarketplace", () => {
                     return item;
                 })
             );
-            // console.log("items: ", items);
+
+            //Test
+            let buyerAddress = await buyer.getAddress();
+            assert.equal(
+                myNFTs[0].owner,
+                buyerAddress,
+                "Buyer address does not match owner after closing"
+            );
         });
 
         it("Should be able to fetch a listing by id", async () => {
@@ -510,7 +525,6 @@ describe("BookMarketplace", () => {
                 "VM Exception while processing transaction: reverted with reason string 'Seller cannot bid on their own listing.'"
             );
         });
-        console.log("my NFTS: ", myNFTs);
     });
 
     async function getDefaultListing() {
