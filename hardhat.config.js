@@ -6,6 +6,7 @@ module.exports = {
     networks: {
         hardhat: {
             chainId: 1337,
+            allowUnlimitedContractSize: true, // defaults to false and 24KB contract size limit
         },
     },
     solidity: "0.8.17",
