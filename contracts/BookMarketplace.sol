@@ -315,6 +315,15 @@ contract BookMarketplace is ERC721URIStorage {
         return idToMarketItem[tokenId];
     }
 
+    /*Transfer the token when a listing is sold either by bid or by instant price */
+    function transferToken(uint256 tokenId) private {
+        idToMarketItem[tokenId].owner = payable(msg.sender);
+        idToMarketItem[tokenId].sold = true;
+        idToMarketItem[tokenId].seller = payable(address(0));
+        _itemsSold.increment();
+        _transfer(address(this), msg.sender, tokenId);
+    }
+
     /* Creates the sale of a marketplace item */
     /* Transfers ownership of the item, as well as funds between parties */
     function createMarketSale(uint256 tokenId) public payable {
@@ -324,11 +333,11 @@ contract BookMarketplace is ERC721URIStorage {
             msg.value == price,
             "Please submit the asking price in order to complete the purchase"
         );
-        idToMarketItem[tokenId].owner = payable(msg.sender);
-        idToMarketItem[tokenId].sold = true;
-        idToMarketItem[tokenId].seller = payable(address(0));
-        _itemsSold.increment();
-        _transfer(address(this), msg.sender, tokenId);
+
+        //Transfer token
+        transferToken(tokenId);
+
+        //Transfer funds
         payable(marketOwner).transfer(listingPrice);
         payable(seller).transfer(msg.value);
     }
@@ -362,16 +371,13 @@ contract BookMarketplace is ERC721URIStorage {
             "Please submit the price equals the bid amount"
         );
 
-        //Transfer bid price
+        //Transfer funds
         address payable seller = idToMarketItem[tokenId].seller;
         (bool success, ) = seller.call{value: msg.value}("");
         require(success, "Transfer failed.");
+
         //Transfer token
-        idToMarketItem[tokenId].owner = payable(bid.bidder);
-        idToMarketItem[tokenId].sold = true;
-        idToMarketItem[tokenId].seller = payable(address(0));
-        _itemsSold.increment();
-        _transfer(address(this), bid.bidder, tokenId);
+        transferToken(tokenId);
 
         //Delete bid history
         for (uint i = 0; i < idToMarketItem[tokenId].bidList.length; i++) {
