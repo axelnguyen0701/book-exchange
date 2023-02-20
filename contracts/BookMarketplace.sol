@@ -24,6 +24,7 @@ contract BookMarketplace is ERC721URIStorage {
     struct Bid {
         address bidder;
         uint256 bidAmount;
+        bool chosen;
     }
 
     struct Listing {
@@ -62,13 +63,20 @@ contract BookMarketplace is ERC721URIStorage {
     );
 
     /* modifiers */
-    
-    
+
     // Modifier prevents function from being called by anyone other than the market owner
     modifier onlyMarketOwner() {
         require(
             marketOwner == msg.sender,
             "Only the marketplace owner can call this function."
+        );
+        _;
+    }
+
+    modifier onlyListingSeller(uint256 tokenId) {
+        require(
+            idToMarketItem[tokenId].seller == msg.sender,
+            "Only the seller can call this function."
         );
         _;
     }
@@ -81,12 +89,15 @@ contract BookMarketplace is ERC721URIStorage {
 
     /* functions */
 
-    function getMarketOwnerAddress() public view returns(address) {
+    function getMarketOwnerAddress() public view returns (address) {
         return marketOwner;
     }
 
     // change the price of a listing
-    function updateInstantPrice(uint256 tokenId, uint256 newPrice) public onlyMarketOwner {
+    function updateInstantPrice(
+        uint256 tokenId,
+        uint256 newPrice
+    ) public onlyMarketOwner {
         Listing storage listing = idToMarketItem[tokenId];
         listing.instantPrice = newPrice;
         idToMarketItem[tokenId] = listing;
@@ -101,25 +112,18 @@ contract BookMarketplace is ERC721URIStorage {
     // Adds bids to a bid list by tokenId
     function addBid(uint256 tokenId, uint256 bidAmount) public payable {
         Listing storage listing = idToMarketItem[tokenId];
-        require(
-            listing.allowBid == true,
-            "This item does not allow bids."
-        );
-        require(
-            listing.sold == false,
-            "This item has been sold."
-        );
+        require(listing.allowBid == true, "This item does not allow bids.");
+        require(listing.sold == false, "This item has been sold.");
         require(
             bidAmount >= listing.instantPrice,
             "Bid must be greater than or equal to the current price."
         );
-        if(hasUserBid(tokenId, msg.sender) == false) {
+        if (hasUserBid(tokenId, msg.sender) == false) {
             require(
                 msg.value == biddingPrice,
                 "Bid price must be paid on first bid: 0.001 ether."
             );
-        }
-        else {
+        } else {
             require(
                 msg.value == 0,
                 "Bid price must be 0 ether after first bid."
@@ -139,11 +143,11 @@ contract BookMarketplace is ERC721URIStorage {
         );
 
         //if user has not bid, transfer bidding price to market owner
-        if(hasUserBid(tokenId, msg.sender) == false) {
+        if (hasUserBid(tokenId, msg.sender) == false) {
             (bool success, ) = marketOwner.call{value: biddingPrice}("");
             require(success, "Transfer failed.");
         }
-        
+
         Bid memory newBid;
         newBid.bidder = msg.sender;
         newBid.bidAmount = bidAmount;
@@ -157,7 +161,10 @@ contract BookMarketplace is ERC721URIStorage {
     }
 
     // checks is a user has bid
-    function hasUserBid(uint256 tokenId, address user) public view returns (bool) {
+    function hasUserBid(
+        uint256 tokenId,
+        address user
+    ) public view returns (bool) {
         Listing storage listing = idToMarketItem[tokenId];
         for (uint i = 0; i < listing.bidList.length; i++) {
             if (listing.bidList[i].bidder == user) {
@@ -179,6 +186,20 @@ contract BookMarketplace is ERC721URIStorage {
         return highestBid;
     }
 
+    // Returns the highest bid index for a given tokenId
+    function getHighestBidIndex(uint256 tokenId) public view returns (int256) {
+        Bid[] memory bidList = idToMarketItem[tokenId].bidList;
+        int256 highestBidIndex = -1;
+        Bid memory highestBid;
+        for (uint i = 0; i < bidList.length; i++) {
+            if (bidList[i].bidAmount > highestBid.bidAmount) {
+                highestBid = bidList[i];
+                highestBidIndex = int256(i);
+            }
+        }
+        return highestBidIndex;
+    }
+
     // Returns the user who placed the highest bid for a given tokenId
     // Note: Maybe combine this functionality with the getHighestBid function to save gas
     function getHighestBidder(uint256 tokenId) public view returns (address) {
@@ -198,9 +219,12 @@ contract BookMarketplace is ERC721URIStorage {
         listing.sold = true;
         idToMarketItem[tokenId] = listing;
     }
-    
+
     /* Updating the allowed bid is required in bid closing sequence */
-    function updateAllowBid(uint256 tokenId, bool allow) public onlyMarketOwner {
+    function updateAllowBid(
+        uint256 tokenId,
+        bool allow
+    ) public onlyMarketOwner {
         Listing storage listing = idToMarketItem[tokenId];
         listing.allowBid = allow;
         idToMarketItem[tokenId] = listing;
@@ -208,10 +232,7 @@ contract BookMarketplace is ERC721URIStorage {
 
     /* Updates the listing price of the contract */
     function updateListingPrice(uint256 _listingPrice) public onlyMarketOwner {
-        require(
-            _listingPrice >= 0,
-            "Listing price must be greater than 0."
-        );
+        require(_listingPrice >= 0, "Listing price must be greater than 0.");
         listingPrice = _listingPrice;
     }
 
@@ -234,8 +255,6 @@ contract BookMarketplace is ERC721URIStorage {
         return biddingPrice;
     }
 
-
-    
     /* Mints a token and lists it in the marketplace */
     function createToken(
         string memory tokenURI,
@@ -275,7 +294,7 @@ contract BookMarketplace is ERC721URIStorage {
         listing.bidList.push(emptyBid);
 
         idToMarketItem[tokenId] = listing;
-        
+
         _transfer(msg.sender, address(this), tokenId);
         emit ListingCreated(
             tokenId,
@@ -290,27 +309,75 @@ contract BookMarketplace is ERC721URIStorage {
     }
 
     /* get the listing for a given token id */
-    function getListingByTokenId(uint256 tokenId) public view returns (Listing memory) {
+    function getListingByTokenId(
+        uint256 tokenId
+    ) public view returns (Listing memory) {
         return idToMarketItem[tokenId];
     }
 
     /* Creates the sale of a marketplace item */
     /* Transfers ownership of the item, as well as funds between parties */
-    function createMarketSale(
-      uint256 tokenId
-      ) public payable {
-      uint price = idToMarketItem[tokenId].instantPrice;
-      address seller = idToMarketItem[tokenId].seller;
-      require(msg.value == price, "Please submit the asking price in order to complete the purchase");
-      idToMarketItem[tokenId].owner = payable(msg.sender);
-      idToMarketItem[tokenId].sold = true;
-      idToMarketItem[tokenId].seller = payable(address(0));
-      _itemsSold.increment();
-      _transfer(address(this), msg.sender, tokenId);
-      payable(marketOwner).transfer(listingPrice);
-      payable(seller).transfer(msg.value);
+    function createMarketSale(uint256 tokenId) public payable {
+        uint price = idToMarketItem[tokenId].instantPrice;
+        address seller = idToMarketItem[tokenId].seller;
+        require(
+            msg.value == price,
+            "Please submit the asking price in order to complete the purchase"
+        );
+        idToMarketItem[tokenId].owner = payable(msg.sender);
+        idToMarketItem[tokenId].sold = true;
+        idToMarketItem[tokenId].seller = payable(address(0));
+        _itemsSold.increment();
+        _transfer(address(this), msg.sender, tokenId);
+        payable(marketOwner).transfer(listingPrice);
+        payable(seller).transfer(msg.value);
     }
 
+    /* Creates the sale of a marketplace item */
+    /* Transfers ownership of the item, as well as funds between parties */
+    function createBiddingSale(
+        uint256 tokenId
+    ) public onlyListingSeller(tokenId) {
+        require(
+            idToMarketItem[tokenId].allowBid,
+            "This listing does not allow bidding"
+        );
+
+        int256 highestBidIndex = getHighestBidIndex(tokenId);
+        require(highestBidIndex > 0, "This listing does not have any bid yet");
+
+        //Mark as chosen
+        idToMarketItem[tokenId].bidList[uint256(highestBidIndex)].chosen = true;
+    }
+
+    function acceptBiddingSale(
+        uint256 tokenId,
+        uint256 bidIndex
+    ) public payable {
+        Bid memory bid = idToMarketItem[tokenId].bidList[bidIndex];
+        require(bid.chosen, "Bid has not been chosen");
+        require(bid.bidder == msg.sender, "You are not the bidder");
+        require(
+            bid.bidAmount == msg.value,
+            "Please submit the price equals the bid amount"
+        );
+
+        //Transfer bid price
+        address payable seller = idToMarketItem[tokenId].seller;
+        (bool success, ) = seller.call{value: msg.value}("");
+        require(success, "Transfer failed.");
+        //Transfer token
+        idToMarketItem[tokenId].owner = payable(bid.bidder);
+        idToMarketItem[tokenId].sold = true;
+        idToMarketItem[tokenId].seller = payable(address(0));
+        _itemsSold.increment();
+        _transfer(address(this), bid.bidder, tokenId);
+
+        //Delete bid history
+        for (uint i = 0; i < idToMarketItem[tokenId].bidList.length; i++) {
+            idToMarketItem[tokenId].bidList.pop();
+        }
+    }
 
     /* Returns all unsold market items */
     function fetchListings() public view returns (Listing[] memory) {

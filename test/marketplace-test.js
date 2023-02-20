@@ -1,4 +1,5 @@
 const { assert } = require("chai");
+const { ethers } = require("hardhat");
 
 describe("BookMarketplace", () => {
     // global test variables
@@ -133,6 +134,7 @@ describe("BookMarketplace", () => {
             const auctionPrice = ethers.utils.parseUnits("1", "ether");
             //Connect buyer address
             const [_, buyer] = await ethers.getSigners();
+            const provider = ethers.provider;
 
             //Close sale
             await bookMarketplace
@@ -524,6 +526,88 @@ describe("BookMarketplace", () => {
                 error,
                 "VM Exception while processing transaction: reverted with reason string 'Seller cannot bid on their own listing.'"
             );
+        });
+        it("Can close the highest bid", async () => {
+            const bidPrice = ethers.utils.parseUnits("5", "ether");
+            const secondBidPrice = ethers.utils.parseUnits("6", "ether");
+
+            const txResponse = await bookMarketplace.createToken(
+                defaultTokenURI + "1",
+                defaultInstantPrice,
+                defaultStartingPrice,
+                Boolean(true),
+                { value: defaultListingPrice }
+            );
+
+            // get new signer
+            const [_, buyer, secondBuyer] = await ethers.getSigners();
+            const buyerMarketConnection = await bookMarketplace.connect(buyer);
+            const secondBuyerMarketConnection = await bookMarketplace.connect(
+                secondBuyer
+            );
+
+            // get initial balance
+            const provider = ethers.provider;
+            const balance = await provider.getBalance(secondBuyer.address);
+
+            // Add a new bid
+            const listingId = await getIdFromCreateTxResponse(txResponse);
+            await buyerMarketConnection.addBid(listingId, bidPrice, {
+                value: defaultBiddingPrice,
+            });
+
+            // Add a second bid from second buyer
+            await secondBuyerMarketConnection.addBid(
+                listingId,
+                secondBidPrice,
+                {
+                    value: defaultBiddingPrice,
+                }
+            );
+
+            // Close the bidding
+            await bookMarketplace.createBiddingSale(listingId);
+            const oldBids = await bookMarketplace.getBidList(listingId);
+            await secondBuyerMarketConnection.acceptBiddingSale(listingId, 2, {
+                value: secondBidPrice,
+            });
+
+            //Get final balance of second buyer
+            const finalBalance = await provider.getBalance(secondBuyer.address);
+
+            let secondBuyerNFTs = await bookMarketplace
+                .connect(secondBuyer)
+                .fetchMyNFTs();
+            secondBuyerNFTs = await Promise.all(
+                secondBuyerNFTs.map(async (i) => {
+                    const tokenUri = await bookMarketplace.tokenURI(i.tokenId);
+                    let item = {
+                        instantPrice: i.instantPrice.toString(),
+                        startingPrice: i.startingPrice.toString(),
+                        seller: i.seller,
+                        owner: i.owner,
+                        allowBid: i.allowBid,
+                        bidList: i.bidList,
+                        tokenUri,
+                    };
+                    return item;
+                })
+            );
+
+            //Test if amount is transferred
+            assert(
+                balance - finalBalance - defaultBiddingPrice >=
+                    secondBidPrice.toString(),
+                `Expect >= ${secondBidPrice.toString()}, got ${
+                    finalBalance - balance
+                }`
+            );
+            //Test if right token
+            assert.equal(secondBuyerNFTs[0].tokenUri, defaultTokenURI + "1");
+            //Test if right address
+            assert.equal(secondBuyerNFTs[0].owner, secondBuyer.address);
+            //Test if bidList reset
+            assert.equal(secondBuyerNFTs[0].bidList.length, oldBids.length - 2);
         });
     });
 
