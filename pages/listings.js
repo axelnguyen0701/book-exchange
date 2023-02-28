@@ -37,96 +37,88 @@ export default function Listings() {
     }
   };
 
-  // if (loaded) checks for user being signed in to metamask to prevent page being accessed without being signed in (WIP)
-  if (loaded) {
-    // viewing active listings
-    if (alignment === "active") {
-      return (
-        <Container>
-          <ResponsiveAppBar />
-          <div className="titleHeader">
-            <h1 className="title">{header}</h1>
-          </div>
-          <div className="search-button-box">
-            <ToggleButtonGroup
-              color="primary"
-              value={alignment}
-              exclusive
-              onChange={handleChange}
-              aria-label="Platform"
-            >
-              <ToggleButton value="active" selectedColor=" #301934">
-                Active
-              </ToggleButton>
-              <ToggleButton value="past" selectedColor=" #301934">
-                Sold
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </div>
-          <div className="book-shelf">
-            <MyListing
-              imgurl="https://i.ebayimg.com/images/g/pwYAAOSwbDdji-Dn/s-l500.jpg"
-              title="Sociology in Action"
-              author="Myles Richer"
-              isbn="ISBN: 18371921"
-              courses="SOCI 100"
-              pricing="40"
-              retails="75"
-            ></MyListing>
-            <MyListing
-              imgurl="https://thomaspark.co/wp/wp-content/uploads/2012/12/interactiondesign-book.jpg"
-              title="Interaction Design (3rd Ed)"
-              author="Thomas Park"
-              isbn="ISBN: 83917334"
-              courses="CMPT 250, DESN 223"
-              pricing="80"
-              retails="105"
-            ></MyListing>
-          </div>
-        </Container>
-      );
-    }
-    // viewing old listings
-    if (alignment === "past") {
-      return (
-        <Container>
-          <ResponsiveAppBar />
-          <div className="titleHeader">
-            <h1 className="title">{header}</h1>
-          </div>
-          <div className="search-button-box">
-            <ToggleButtonGroup
-              color="primary"
-              value={alignment}
-              exclusive
-              onChange={handleChange}
-              aria-label="Platform"
-            >
-              <ToggleButton value="active" selectedColor=" #301934">
-                Active
-              </ToggleButton>
-              <ToggleButton value="past" selectedColor=" #301934">
-                Sold
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </div>
-          <div className="book-shelf">
-            <ClosedListing
-              imgurl="https://media.karousell.com/media/photos/products/2020/9/1/oxford_complete_chemistry_text_1598935446_e60666e6_progressive.jpg"
-              title="Complete Chemistry"
-              author="Thomas Park"
-              isbn="ISBN: 83917334"
-              courses="CMPT 250, DESN 223"
-              outcome="Sold: 36$"
-            ></ClosedListing>
-          </div>
-        </Container>
-      );
-    }
+  // viewing active listings
+  if (alignment === "active") {
+    return (
+      <Container>
+        <ResponsiveAppBar />
+        <div className="titleHeader">
+          <h1 className="title">{header}</h1>
+        </div>
+        <div className="search-button-box">
+          <ToggleButtonGroup
+            color="primary"
+            value={alignment}
+            exclusive
+            onChange={handleChange}
+            aria-label="Platform"
+          >
+            <ToggleButton value="active" selectedColor=" #301934">
+              Active
+            </ToggleButton>
+            <ToggleButton value="past" selectedColor=" #301934">
+              Sold
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </div>
+        <div className="book-shelf">
+          <MyListing
+            imgurl="https://i.ebayimg.com/images/g/pwYAAOSwbDdji-Dn/s-l500.jpg"
+            title="Sociology in Action"
+            author="Myles Richer"
+            isbn="ISBN: 18371921"
+            courses="SOCI 100"
+            pricing="40"
+            retails="75"
+          ></MyListing>
+          <MyListing
+            imgurl="https://thomaspark.co/wp/wp-content/uploads/2012/12/interactiondesign-book.jpg"
+            title="Interaction Design (3rd Ed)"
+            author="Thomas Park"
+            isbn="ISBN: 83917334"
+            courses="CMPT 250, DESN 223"
+            pricing="80"
+            retails="105"
+          ></MyListing>
+        </div>
+      </Container>
+    );
   }
-
-  // show this if user isnt signed in (WIP)
-  if (!loaded) {
-    return <h1>SIGN IN</h1>;
+  // viewing old listings
+  if (alignment === "past") {
+    return (
+      <Container>
+        <ResponsiveAppBar />
+        <div className="titleHeader">
+          <h1 className="title">{header}</h1>
+        </div>
+        <div className="search-button-box">
+          <ToggleButtonGroup
+            color="primary"
+            value={alignment}
+            exclusive
+            onChange={handleChange}
+            aria-label="Platform"
+          >
+            <ToggleButton value="active" selectedColor=" #301934">
+              Active
+            </ToggleButton>
+            <ToggleButton value="past" selectedColor=" #301934">
+              Sold
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </div>
+        <div className="book-shelf">
+          <ClosedListing
+            imgurl="https://media.karousell.com/media/photos/products/2020/9/1/oxford_complete_chemistry_text_1598935446_e60666e6_progressive.jpg"
+            title="Complete Chemistry"
+            author="Thomas Park"
+            isbn="ISBN: 83917334"
+            courses="CMPT 250, DESN 223"
+            outcome="Sold: 36$"
+          ></ClosedListing>
+        </div>
+      </Container>
+    );
   }
 }

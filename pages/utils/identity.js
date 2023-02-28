@@ -36,7 +36,11 @@ async function webClient({
     provider = new EthereumAuthProvider(window.ethereum, address);
   }
 
-  await client.authenticate(provider);
+  try {
+    await client.authenticate(provider);
+  } catch (err) {
+    console.log("HERE: " + err);
+  }
 
   const selfId = new SelfID({ client });
   const id = selfId.did._id;
