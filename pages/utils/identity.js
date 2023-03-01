@@ -39,7 +39,7 @@ async function webClient({
   try {
     await client.authenticate(provider);
   } catch (err) {
-    console.log("HERE: " + err);
+    console.log("ERROR: " + err);
   }
 
   const selfId = new SelfID({ client });

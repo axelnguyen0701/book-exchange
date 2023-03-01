@@ -19,7 +19,7 @@ const theme = createTheme({
   },
 });
 
-// sign in page -- SWAP ONCLICK BACK TO CONNECT ONCE AUTH IS FIXED --
+// sign in page
 export default function Home() {
   const { connect, loaded } = useContext(AppContext);
 
@@ -30,11 +30,10 @@ export default function Home() {
           <h1 className="title">Welcome to Open Market</h1>
           <h3>Connect with MetaMask to Continue</h3>
           <Button
-            //onClick={connect}
+            onClick={connect}
             className="search-btn"
             variant="contained"
             color="primary"
-            href="/home"
           >
             Authenticate
           </Button>
