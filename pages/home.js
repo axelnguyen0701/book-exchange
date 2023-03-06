@@ -32,7 +32,6 @@ export default function Home() {
             provider
         );
         const data = await contract.fetchListings();
-
         /*
          *  map over items returned from smart contract and format
          *  them as well as fetch their token metadata
@@ -41,19 +40,21 @@ export default function Home() {
             data.map(async (i) => {
                 const tokenUri = await contract.tokenURI(i.tokenId);
                 const meta = await axios.get(tokenUri);
-                let price = ethers.utils.formatUnits(
-                    i.price.toString(),
-                    "ether"
-                );
+
                 let item = {
-                    price,
+                    price: ethers.utils.formatEther(i.instantPrice),
                     tokenId: i.tokenId.toNumber(),
                     seller: i.seller,
                     owner: i.owner,
+                    allowBid: i.allowBid,
+                    startingPrice: ethers.utils.formatEther(i.startingPrice),
                     image: meta.data.image,
-                    name: meta.data.name,
-                    description: meta.data.description,
+                    title: meta.data.title,
+                    author: meta.data.author,
+                    ISBN: meta.data.ISBN,
+                    course: meta.data.course,
                 };
+
                 return item;
             })
         );
@@ -63,13 +64,31 @@ export default function Home() {
 
     //retrieve users saved books and map
 
+    const renderedListings = nfts.map((e, i) => {
+        return (
+            <SavedListing
+                key={i}
+                imgurl={e.image}
+                title={e.title}
+                author={e.author}
+                isbn={`ISBN: ${e.ISBN}`}
+                courses={e.course}
+                allowBid={e.allowBid}
+                pricing={e.price}
+                startingPrice={e.startingPrice}
+                retails="90"
+            />
+        );
+    });
+
     const renderListings = () => {
         if (loadingState === "loaded" && !nfts.length)
             return <Typography>Nothing to show yet</Typography>;
 
         return (
             <div className="book-shelf">
-                <SavedListing
+                {renderedListings}
+                {/* <SavedListing
                     imgurl="https://pixl.varagesale.com/http://s3.amazonaws.com/hopshop-image-store-production/154469570/33ed6211efe20c9c3dfd0c93d5585893.jpg?_ver=large_uploader_thumbnail&w=640&h=640&fit=crop&s=8dfdbb9f3c83ca87534438bb1c5230b1"
                     title="Campbell Biology"
                     author="Jon Campbell"
@@ -95,7 +114,7 @@ export default function Home() {
                     courses="CMPT 201, CMPT 360"
                     pricing="32"
                     retails="90"
-                />
+                /> */}
             </div>
         );
     };
