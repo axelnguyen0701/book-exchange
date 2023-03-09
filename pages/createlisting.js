@@ -115,7 +115,7 @@ export default function CreateListing() {
         title: "",
         author: "",
         ISBN: "",
-        course: "",
+        courses: "",
         instantPrice: "",
         startingPrice: "",
     });
@@ -123,16 +123,12 @@ export default function CreateListing() {
     const router = useRouter();
 
     async function uploadToIPFS() {
-        const { title, author, ISBN, course, instantPrice, startingPrice } =
-            formInput;
+        const { title, author, ISBN, instantPrice, startingPrice } = formInput;
 
-        if (
-            !title ||
-            !author ||
-            !ISBN ||
-            !course ||
-            (!instantPrice && !startingPrice)
-        ) {
+        /*A list of courses' URL */
+        const coursesURL = await uploadCourse();
+
+        if (!title || !author || !ISBN || (!instantPrice && !startingPrice)) {
             return;
         }
 
@@ -143,8 +139,9 @@ export default function CreateListing() {
             author,
             image: fileURL,
             ISBN,
-            course,
+            courses: coursesURL,
         });
+
         try {
             const added = await client.add(data);
             const url = DEDICATED_URL + added.path;
@@ -153,6 +150,35 @@ export default function CreateListing() {
         } catch (error) {
             console.log("Error uploading file: ", error);
         }
+    }
+
+    async function uploadCourse() {
+        const { courses } = formInput;
+
+        if (!courses) return;
+
+        /*Split using white-space */
+        const courseList = courses.split(" ");
+
+        /*Filter out courses that are not available first */
+
+        /*For each course that is not available yet on IPFS, create a link */
+        const URLs = await Promise.all(
+            courseList.map(async (e) => {
+                const data = JSON.stringify({ name: e });
+
+                try {
+                    const added = await client.add(data);
+                    const url = DEDICATED_URL + added.path;
+                    return url;
+                    /* after metadata is uploaded to IPFS, return the URL to use it in the transaction */
+                } catch (error) {
+                    console.log("Error uploading course: ", courses);
+                }
+            })
+        );
+
+        return URLs;
     }
 
     async function listNFTForSale() {
@@ -322,13 +348,13 @@ export default function CreateListing() {
                 <TextField
                     className="create-input"
                     id="outlined-basic"
-                    label="Ex. CMPT 315"
+                    label="Ex. 'CMPT-315 CMPT-101' (Seperate by whitespace) "
                     variant="outlined"
-                    value={formInput.course}
+                    value={formInput.courses}
                     onChange={(e) =>
                         updateFormInput({
                             ...formInput,
-                            course: e.target.value,
+                            courses: e.target.value,
                         })
                     }
                 />

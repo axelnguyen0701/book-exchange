@@ -9,6 +9,16 @@ import PurchaseDialog from "../dialog_boxes/purchase";
 
 // This card shows an instant sale listing saved by the user
 export default function SavedListing(props) {
+    const renderedCourses = props.courses.map((e) => (
+        <Typography
+            className="info-text"
+            variant="body2"
+            color="text.secondary"
+            key={e.URL}
+        >
+            {e.name}
+        </Typography>
+    ));
     return (
         <Card className="book-card" sx={{ maxWidth: 345 }}>
             <CardMedia sx={{ height: 290 }} image={props.imgurl} title="Book" />
@@ -36,13 +46,7 @@ export default function SavedListing(props) {
                 >
                     {props.isbn}
                 </Typography>
-                <Typography
-                    className="info-text"
-                    variant="body2"
-                    color="text.secondary"
-                >
-                    {props.courses}
-                </Typography>
+                {renderedCourses}
                 <Typography
                     className="price-text"
                     variant="body2"
