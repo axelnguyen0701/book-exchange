@@ -41,7 +41,7 @@ const notify = () =>
     theme: "colored",
   });
 
-const DEDICATED_URL = "https://book-exchanged.infura-ipfs.io/ipfs/";
+const DEDICATED_URL = "https://book-exchange1.infura-ipfs.io/ipfs/";
 import { marketplaceAddress } from "../config";
 import BookMarketplace from "../artifacts/contracts/BookMarketplace.sol/BookMarketplace.json";
 import { useRouter } from "next/router";
@@ -203,13 +203,20 @@ export default function CreateListing() {
 
     /* create the NFT */
     const price = ethers.utils.parseUnits(
-      alignment === "active" ? formInput.instantPrice : "10000000",
+      alignment === "active"
+        ? // strip values to leave only valid floats
+          formInput.instantPrice.replace(/[^\d.-]/g, "")
+        : "10000000",
       "ether"
     );
 
     const bidPrice =
       alignment === "past"
-        ? ethers.utils.parseUnits(formInput.startingPrice, "ether")
+        ? ethers.utils.parseUnits(
+            // strip values to leave only valid floats
+            formInput.startingPrice.replace(/[^\d.-]/g, ""),
+            "ether"
+          )
         : 0;
     const allowBid = alignment === "past";
 
@@ -361,7 +368,7 @@ export default function CreateListing() {
         <TextField
           className="create-input"
           id="outlined-basic"
-          label="Ex. 'CMPT-315 CMPT-101' (Seperate by whitespace) "
+          label="Ex. 'CMPT-315 CMPT-101' (Separate by whitespace) "
           variant="outlined"
           value={formInput.courses}
           onChange={(e) =>
