@@ -47,7 +47,7 @@ contract BookMarketplace is ERC721URIStorage {
         uint256 instantPrice,
         uint256 startingPrice,
         bool allowBid,
-        Bid[] bidList,
+        // Bid[] bidList,
         bool sold
     );
 
@@ -58,7 +58,7 @@ contract BookMarketplace is ERC721URIStorage {
         uint256 instantPrice,
         uint256 startingPrice,
         bool allowBid,
-        Bid[] bidList,
+        // Bid[] bidList,
         bool sold
     );
 
@@ -303,7 +303,7 @@ contract BookMarketplace is ERC721URIStorage {
             instantPrice,
             startingPrice,
             allowBid,
-            listing.bidList,
+            // listing.bidList,
             false
         );
     }
