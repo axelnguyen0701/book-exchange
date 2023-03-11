@@ -55,3 +55,10 @@ cache
 artifacts
 
 config.js
+# Subgraph
+./subgraph/generated
+./subgraph/build
+# Matchstick
+./subgraph/tests/.*
+
+/data
