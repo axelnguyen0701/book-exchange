@@ -46,6 +46,7 @@ import { marketplaceAddress } from "../config";
 import BookMarketplace from "../artifacts/contracts/BookMarketplace.sol/BookMarketplace.json";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
+import Image from "next/image";
 
 // Themeing for MUI elements
 const theme = createTheme({
@@ -111,7 +112,12 @@ const FileInput = ({ setFileURL }) => {
       </label>
       {imageUrl && selectedImage && (
         <div className="search-button-box" mt={2} textAlign="center">
-          <img src={imageUrl} alt={selectedImage.name} height="300px" />
+          <Image
+            src={imageUrl}
+            alt={selectedImage.name}
+            height="300"
+            width="250"
+          />
         </div>
       )}
     </>

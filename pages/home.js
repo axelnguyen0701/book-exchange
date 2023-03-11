@@ -67,9 +67,8 @@ export default function Home() {
 
   const renderedListings = nfts.map((e, i) => {
     return (
-      <div class="col-md-4">
+      <div className="col-md-4" key={i}>
         <SavedListing
-          key={i}
           imgurl={e.image}
           title={e.title}
           author={e.author}
@@ -96,7 +95,7 @@ export default function Home() {
       <ResponsiveAppBar />
       <div className="titleHeader">
         <h1 className="title">Your Saved Listings</h1>
-        <div class="row"> {renderListings()}</div>
+        <div className="row"> {renderListings()}</div>
       </div>
     </Container>
   );
