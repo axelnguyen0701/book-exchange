@@ -7,7 +7,7 @@ import {
   ListingUpdated,
   Transfer
 } from "../generated/BookMarketplace/BookMarketplace"
-import { ExampleEntity } from "../generated/schema"
+import { ExampleEntity, Listing } from "../generated/schema"
 
 export function handleApproval(event: Approval): void {
   // Entities can be loaded from the store using a string ID; this ID
@@ -73,8 +73,46 @@ export function handleApproval(event: Approval): void {
 
 export function handleApprovalForAll(event: ApprovalForAll): void {}
 
-export function handleListingCreated(event: ListingCreated): void {}
+export function handleListingCreated(event: ListingCreated): void {
+  let listing = new Listing(event.params.tokenId.toHex())
+  listing.tokenId = event.params.tokenId
+  listing.seller = event.params.seller
+  listing.owner = event.params.owner
+  listing.instantPrice = event.params.instantPrice
+  listing.startingPrice = event.params.startingPrice
+  listing.allowBid = event.params.allowBid
+  listing.sold = event.params.sold
+  listing.save()
+}
 
-export function handleListingUpdated(event: ListingUpdated): void {}
+export function handleListingUpdated(event: ListingUpdated): void {
+  let listing = Listing.load(event.params.tokenId.toHex())
 
-export function handleTransfer(event: Transfer): void {}
+  //Basic null check
+  if (listing) {
+    listing.instantPrice = event.params.instantPrice
+    listing.startingPrice = event.params.startingPrice
+    listing.allowBid = event.params.allowBid
+    listing.save()
+  }
+}
+
+export function handleTransfer(event: Transfer): void {
+  let listing = Listing.load(event.params.tokenId.toHex())
+
+  //Basic null check
+  if (listing) {
+    listing.owner = event.params.to
+    listing.save()
+  }
+}
+
+export function handleBidAdded(event: BidAdded): void {
+  let listing = Listing.load(event.params.tokenId.toHex())
+
+  //Basic null check
+  if (listing) {
+    listing.bidList = event.params.bidList
+    listing.save()
+  }
+}

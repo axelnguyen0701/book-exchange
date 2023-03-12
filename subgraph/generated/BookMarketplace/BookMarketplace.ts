@@ -62,6 +62,32 @@ export class ApprovalForAll__Params {
   }
 }
 
+export class BidAdded extends ethereum.Event {
+  get params(): BidAdded__Params {
+    return new BidAdded__Params(this);
+  }
+}
+
+export class BidAdded__Params {
+  _event: BidAdded;
+
+  constructor(event: BidAdded) {
+    this._event = event;
+  }
+
+  get tokenId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get bidder(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get bidAmount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class ListingCreated extends ethereum.Event {
   get params(): ListingCreated__Params {
     return new ListingCreated__Params(this);

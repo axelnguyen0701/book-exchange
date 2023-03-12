@@ -62,6 +62,12 @@ contract BookMarketplace is ERC721URIStorage {
         bool sold
     );
 
+    event BidAdded(
+        uint256 indexed tokenId,
+        address bidder,
+        uint256 bidAmount
+    );
+
     /* modifiers */
 
     // Modifier prevents function from being called by anyone other than the market owner
@@ -152,6 +158,8 @@ contract BookMarketplace is ERC721URIStorage {
         newBid.bidder = msg.sender;
         newBid.bidAmount = bidAmount;
         listing.bidList.push(newBid);
+        
+        emit BidAdded(tokenId, msg.sender, bidAmount);
     }
 
     // Returns the bid list for a given tokenId

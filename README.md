@@ -26,3 +26,6 @@ Recap of steps:
 6. run `yarn create-local` and `yarn deploy-local` to deploy the subgraph
 7. interact with the subgraph
 8. query the subgraph at `http://127.0.0.1:8000/subgraphs/name/BookMarketplace/graphql`
+
+
+note: If you have to close hardhat, run `yarn graph-local-clean`
