@@ -211,6 +211,93 @@
   border: px solid  #4b2751;
 }
 
+/* CHAT CSS */
+
+.message-container{
+  height: 100%;
+  width: 100%;
+  border: 3px solid #4b2751;
+  display: flex;
+  flex-direction: row;
+}
+
+.users-container {
+  border: 3px solid #4b2751;
+  height:91.5vh;
+  width: 20vw;
+  overflow: scroll;
+}
+
+.chat-container{
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.input-box {
+  border: 3px solid #4b2751;
+  height: 8vh;
+}
+
+.message-input {
+  width: 90%;
+  margin-left: 3%;
+  margin-right: 2%;
+}
+
+.chat-box {
+  border: 3px solid #4b2751;
+  height: 83.5vh; 
+  width: 80vw;
+  overflow: scroll;
+}
+
+.contact {
+  border-bottom: 3px solid #4b2751;
+  border-radius: 0;
+  height: 90px;
+}
+
+.selected {
+  background-color: #3a3b3a;
+
+}
+
+.bubble-incoming {
+  margin-left: 2%;
+  margin-top: 1%;
+  position: relative;
+  font-family: sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+  width: 300px;
+  background:#B785B7;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  color:white;
+}
+
+.bubble-outgoing {
+  margin-left: 72%;
+  margin-top: 1%;
+  position: relative;
+  font-family: sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+  width: 300px;
+  background: #4b2751;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  color: white;
+}
+
+
+
+
+
+
 /* MOBILE CSS */
 
 @media only screen and (max-width: 840px) {
@@ -255,4 +342,15 @@
   width: 100%;
   align-items: center;
  
+}
+
+/* Hide scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for other browsers */
+div {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
