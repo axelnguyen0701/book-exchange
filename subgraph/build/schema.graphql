@@ -14,7 +14,7 @@ type Listing @entity {
   startingPrice: BigInt!
   allowBid: Boolean!
   sold: Boolean!
-  bidlist: [Bid!] @derivedFrom(field: "listing")
+  bidList: [Bid!]! @derivedFrom(field: "listing")
 }
 
 type Bid @entity {

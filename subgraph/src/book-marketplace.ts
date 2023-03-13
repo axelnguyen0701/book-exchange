@@ -5,9 +5,10 @@ import {
   ApprovalForAll,
   ListingCreated,
   ListingUpdated,
-  Transfer
+  Transfer,
+  BidAdded
 } from "../generated/BookMarketplace/BookMarketplace"
-import { ExampleEntity, Listing } from "../generated/schema"
+import { ExampleEntity, Listing, Bid } from "../generated/schema"
 
 export function handleApproval(event: Approval): void {
   // Entities can be loaded from the store using a string ID; this ID
@@ -110,9 +111,17 @@ export function handleTransfer(event: Transfer): void {
 export function handleBidAdded(event: BidAdded): void {
   let listing = Listing.load(event.params.tokenId.toHex())
 
+  
   //Basic null check
-  if (listing) {
-    listing.bidList = event.params.bidList
-    listing.save()
-  }
+  // if (listing != null) {
+  //   let bid = new Bid(event.params.tokenId.toHex())
+  //   bid.id = event.params.tokenId.toString()
+  //   bid.bidder = event.params.bidder
+  //   bid.amount = event.params.bidAmount
+  //   bid.listing = listing.id 
+  //   bid.save()
+
+  //   listing.bidList = listing.bidList.push(bid)
+  //   listing.save()
+  // }
 }

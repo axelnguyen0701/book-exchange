@@ -32,4 +32,6 @@ dataSources:
           handler: handleListingUpdated
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
+        - event: BidAdded(indexed uint256,address,uint256)
+          handler: handleBidAdded
       file: BookMarketplace/BookMarketplace.wasm

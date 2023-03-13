@@ -164,21 +164,13 @@ export class Listing extends Entity {
     this.set("sold", Value.fromBoolean(value));
   }
 
-  get bidList(): Array<string> | null {
+  get bidList(): Array<string> {
     let value = this.get("bidList");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
+    return value!.toStringArray();
   }
 
-  set bidList(value: Array<string> | null) {
-    if (!value) {
-      this.unset("bidList");
-    } else {
-      this.set("bidList", Value.fromStringArray(<Array<string>>value));
-    }
+  set bidList(value: Array<string>) {
+    this.set("bidList", Value.fromStringArray(value));
   }
 }
 
