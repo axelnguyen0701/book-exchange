@@ -8,10 +8,13 @@ import { TextField } from "@mui/material";
 import { useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
 import { Box } from "@mui/system";
+import { useContext } from "react";
+import { AppContext } from "../context/MetaContext";
 
 export default function MessageDialog(props) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [open, setOpen] = useState(false);
+  const { ethID } = useContext(AppContext);
 
   // opening and closing the dialog box
   const handleClickOpen = () => {
@@ -43,7 +46,7 @@ export default function MessageDialog(props) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle className="dialog-title" id="alert-dialog-title">
-          Message Seller of {props.title}
+          Message Seller of {props.title} from: {ethID}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", alignItems: "flex-end" }}>

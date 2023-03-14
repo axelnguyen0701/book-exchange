@@ -5,13 +5,19 @@ import Outgoing from "./chat/outgoing";
 import { Box } from "@mui/system";
 import SendIcon from "@mui/icons-material/Send";
 import { TextField } from "@mui/material";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AppContext } from "./context/MetaContext";
+import Gun from "gun";
 
 // Page for messaging
 export default function Messages() {
+  const gun = Gun("http://localhost:8080/gun");
+  const { ethID } = useContext(AppContext);
   const [selectedConversation, setSelectedConversation] = useState("test");
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [currentMessage, setCurrentMessage] = useState("");
+  const [messagesSent, setMessagesSent] = useState(null);
+  const [messagesRecieved, setMessagesRecieved] = useState("null");
   const [selectedContact, setSelectedContact] = useState(null);
   const [messageArray, setMessageArray] = useState([
     {
@@ -37,28 +43,34 @@ export default function Messages() {
     },
   ]);
 
+  const userNode = gun.get(ethID);
+
   const handleContactClick = (id, name) => {
     setSelectedContactId(id);
     setSelectedConversation(name);
     setSelectedContact(name);
   };
 
-  function sendMessage(message) {
-    event.preventDefault();
-    const newArray = [...messageArray, message];
-    setMessageArray(newArray);
-    setCurrentMessage("");
-  }
-
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && currentMessage !== "") {
       sendMessage({
-        from: "User",
-        to: selectedConversation,
         content: currentMessage,
       });
     }
   };
+
+  function sendMessage(data) {
+    userNode
+      .get("messagesSent")
+      .set({ recipient: "to_someonee", message: data.content });
+
+    userNode
+      .get("messagesSent")
+      .map()
+      .once((messageNode) => {
+        console.log("Message content:", messageNode.message);
+      });
+  }
 
   return (
     <>
@@ -183,8 +195,6 @@ export default function Messages() {
                 sx={{ color: "action.active", mr: 1, my: 0.5 }}
                 onClick={() =>
                   sendMessage({
-                    from: "User",
-                    to: selectedConversation,
                     content: currentMessage,
                   })
                 }
