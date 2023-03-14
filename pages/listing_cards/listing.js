@@ -6,6 +6,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import PurchaseDialog from "../dialog_boxes/purchase";
+import MessageDialog from "../dialog_boxes/message";
 
 // This card is used for viewing a listing in search results
 export default function Listing(props) {
@@ -57,9 +58,7 @@ export default function Listing(props) {
           title={props.title}
           pricing={props.pricing}
         ></PurchaseDialog>
-        <Button size="small" className="option">
-          Message
-        </Button>
+        <MessageDialog title={props.title}></MessageDialog>
         <Button size="small" className="option">
           Save
         </Button>
