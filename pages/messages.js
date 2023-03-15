@@ -5,9 +5,12 @@ import Outgoing from "./chat/outgoing";
 import { Box } from "@mui/system";
 import SendIcon from "@mui/icons-material/Send";
 import { TextField } from "@mui/material";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AppContext } from "./context/MetaContext";
 import Gun from "gun";
+
+// ACCOUNT 0 (4 on metamask)  DID: did:3:kjzl6cwe1jw145oneizhocrl2pdyswo1syoeat8jvebu3tkal14sbsax582ofgd
+// ACCOUNT 0  (3 on metamask) did:3:kjzl6cwe1jw149qgb89y6j9mdwwd6mtdyhqfxi86cnlqutduos3gtn8xzsqvui0 // HARDCODED MESSAGE RECIPIENT FROM LISTING
 
 // Page for messaging
 export default function Messages() {
@@ -16,41 +19,47 @@ export default function Messages() {
   const [selectedConversation, setSelectedConversation] = useState("test");
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [currentMessage, setCurrentMessage] = useState("");
-  const [messagesSent, setMessagesSent] = useState(null);
-  const [messagesRecieved, setMessagesRecieved] = useState("null");
+  const [messageArray, setMessageArray] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
-  const [messageArray, setMessageArray] = useState([
-    {
-      from: "Michael",
-      to: "User",
-      content: "Hey want to meet at spiral stairs?",
-    },
-    {
-      from: "User",
-      to: "Michael",
-      content: "Sure, that works for me",
-    },
-    {
-      from: "Rick",
-      to: "User",
-      content:
-        "I'm avaiable at 6pm to pick up the book. Does this work for you? If not I can do another day",
-    },
-    {
-      from: "Michael",
-      to: "User",
-      content: "Cool see you soon",
-    },
-  ]);
+  const [messageUsers, setMessageUsers] = useState([]);
+  const messagelist = [];
+  const userBookTitles = [];
 
+  // get users sent and recieved nodes
   const userNode = gun.get(ethID);
+  const messagesSentNode = userNode.get("messagesSent");
+  const messagesReceivedNode = userNode.get("messagesReceived");
 
-  const handleContactClick = (id, name) => {
-    setSelectedContactId(id);
-    setSelectedConversation(name);
-    setSelectedContact(name);
-  };
+  // create an array of all recieved messages
+  messagesReceivedNode.map((message, id) => {
+    messagelist.push(message);
+  });
 
+  // get sent messages
+  messagesSentNode.map((message, id) => {
+    messagelist.push(message);
+  });
+
+  console.log(messagelist);
+
+  // create information needed for contact cards
+  messagelist.forEach((message) => {
+    if (message.to === ethID || message.from === ethID) {
+      // include messages sent by the user
+      const fromUser = message.from === ethID ? message.to : message.from;
+      const bookTitle = message.bookTitle;
+      const userBookTitle = { fromUser, bookTitle };
+      if (
+        !userBookTitles.some(
+          (ubt) => ubt.fromUser === fromUser && ubt.bookTitle === bookTitle
+        )
+      ) {
+        userBookTitles.push(userBookTitle);
+      }
+    }
+  });
+
+  // ENTER KEY MESSAGE SENDING
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && currentMessage !== "") {
       sendMessage({
@@ -59,108 +68,29 @@ export default function Messages() {
     }
   };
 
-  function sendMessage(data) {
-    userNode
-      .get("messagesSent")
-      .set({ recipient: "to_someonee", message: data.content });
-
-    userNode
-      .get("messagesSent")
-      .map()
-      .once((messageNode) => {
-        console.log("Message content:", messageNode.message);
-      });
-  }
-
   return (
     <>
       <ResponsiveAppBar />
       <div className="message-container">
         <div className="users-container">
-          <Contact
-            id="michael"
-            name="Michael"
-            listing="The C Programming Language"
-            letter="M"
-            selected={selectedContactId === "michael"}
-            onClick={() => handleContactClick("michael", "Michael")}
-          ></Contact>
-          <Contact
-            id="rick"
-            name="Rick"
-            listing="World History"
-            letter="R"
-            selected={selectedContactId === "rick"}
-            onClick={() => handleContactClick("rick", "Rick")}
-          ></Contact>
-          <Contact
-            id="sam"
-            name="Sam"
-            listing="Web Development"
-            letter="S"
-            selected={selectedContactId === "sam"}
-            onClick={() => handleContactClick("sam", "Sam")}
-          ></Contact>
-          <Contact
-            id="nick"
-            name="Nick"
-            listing="Chemistry"
-            letter="N"
-            selected={selectedContactId === "nick"}
-            onClick={() => handleContactClick("nick", "Nick")}
-          ></Contact>
-          <Contact
-            id="blake"
-            name="Blake"
-            listing="Biology"
-            letter="B"
-            selected={selectedContactId === "blake"}
-            onClick={() => handleContactClick("blake", "Blake")}
-          ></Contact>
-          <Contact
-            id="julie"
-            name="Julie"
-            listing="Calculus"
-            letter="J"
-            selected={selectedContactId === "julie"}
-            onClick={() => handleContactClick("julie", "Julie")}
-          ></Contact>
-          <Contact
-            id="john"
-            name="John"
-            listing="Criminology"
-            letter="J"
-            selected={selectedContactId === "john"}
-            onClick={() => handleContactClick("john", "John")}
-          ></Contact>
-          <Contact
-            id="dominic"
-            name="Dominic"
-            listing="Sociology"
-            letter="D"
-            selected={selectedContactId === "dominic"}
-            onClick={() => handleContactClick("dominic", "Dominic")}
-          ></Contact>
-          <Contact
-            id="camille"
-            name="Camille"
-            listing="Algebra"
-            letter="C"
-            selected={selectedContactId === "camille"}
-            onClick={() => handleContactClick("camille", "Camille")}
-          ></Contact>
-          <Contact
-            id="vivek"
-            name="Vivek"
-            listing="Algebra 2"
-            letter="V"
-            selected={selectedContactId === "vivek"}
-            onClick={() => handleContactClick("vivek", "Vivek")}
-          ></Contact>
+          {userBookTitles.map((userBookTitle, index) => (
+            <Contact
+              key={index}
+              name={userBookTitle.fromUser}
+              letter={userBookTitle.fromUser.charAt(0)}
+              listing="ecks dee"
+              selected={selectedContactId === index}
+              onClick={() => {
+                setSelectedContactId(index);
+                setSelectedConversation(userBookTitle.fromUser);
+                setSelectedContact(userBookTitle);
+              }}
+            />
+          ))}
         </div>
         <div className="chat-container">
           <div className="chat-box">
-            {messageArray
+            {messagelist
               .filter(
                 (message) =>
                   message.from === selectedConversation ||
@@ -169,11 +99,11 @@ export default function Messages() {
               .map((filteredMessage, index) => {
                 if (filteredMessage.from === selectedConversation) {
                   return (
-                    <Incoming key={index} content={filteredMessage.content} />
+                    <Incoming key={index} content={filteredMessage.message} />
                   );
                 } else {
                   return (
-                    <Outgoing key={index} content={filteredMessage.content} />
+                    <Outgoing key={index} content={filteredMessage.message} />
                   );
                 }
               })}

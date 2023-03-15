@@ -6,6 +6,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import { useContext } from "react";
 import { AppContext } from "./context/MetaContext";
+import { useRouter } from "next/router";
 
 // themeing for MUI elements
 const theme = createTheme({
@@ -22,6 +23,7 @@ const theme = createTheme({
 // search input page
 export default function Search() {
   const { loaded, profile } = useContext(AppContext);
+  const router = useRouter();
 
   return (
     <Container>
@@ -80,7 +82,7 @@ export default function Search() {
               className="search-btn"
               variant="contained"
               color="primary"
-              href="/results"
+              onClick={() => router.push("/results")}
             >
               Search
             </Button>

@@ -6,7 +6,7 @@ import { DialogContent, DialogContentText } from "@mui/material";
 import DialogTitle from "@mui/material/DialogTitle";
 import { TextField } from "@mui/material";
 import { useState } from "react";
-import SendIcon from "@mui/icons-material/Send";
+import Gun from "gun";
 import { Box } from "@mui/system";
 import { useContext } from "react";
 import { AppContext } from "../context/MetaContext";
@@ -15,6 +15,7 @@ export default function MessageDialog(props) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [open, setOpen] = useState(false);
   const { ethID } = useContext(AppContext);
+  const gun = Gun("http://localhost:8080/gun");
 
   // opening and closing the dialog box
   const handleClickOpen = () => {
@@ -25,12 +26,31 @@ export default function MessageDialog(props) {
     setOpen(false);
   };
 
-  function sendMessage(message) {
-    event.preventDefault();
-    const newArray = [...messageArray, message];
-    setMessageArray(newArray);
-    setCurrentMessage("");
-    handleClose();
+  function sendMessage(data) {
+    // set message in user's messagesSent node
+    const message = {
+      to: data.to,
+      from: data.from,
+      message: data.message,
+      book: data.book,
+    };
+
+    const userNode = gun.get(ethID);
+    const userSentNode = userNode.get("messagesSent");
+    userSentNode.set(message);
+
+    userSentNode.once(() => {
+      console.log("messagesSent updated with: " + message);
+    });
+
+    // set message in recipient's messagesReceived node
+    const recipientNode = gun.get(data.to);
+    const recipientReceivedNode = recipientNode.get("messagesReceived");
+    recipientReceivedNode.set(message);
+
+    recipientReceivedNode.once(() => {
+      console.log("messagesReceived updated");
+    });
   }
 
   return (
@@ -65,9 +85,10 @@ export default function MessageDialog(props) {
             className="confirm-option"
             onClick={() =>
               sendMessage({
-                from: "User",
-                to: selectedConversation,
-                content: currentMessage,
+                from: ethID,
+                to: "did:3:kjzl6cwe1jw149qgb89y6j9mdwwd6mtdyhqfxi86cnlqutduos3gtn8xzsqvui0",
+                message: currentMessage,
+                book: props.title,
               })
             }
           >
