@@ -14,8 +14,9 @@ import { AppContext } from "../context/MetaContext";
 export default function MessageDialog(props) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [open, setOpen] = useState(false);
-  const { ethID } = useContext(AppContext);
+  const { ethID, profile } = useContext(AppContext);
   const gun = Gun("http://localhost:8080/gun");
+  const date = new Date();
 
   // opening and closing the dialog box
   const handleClickOpen = () => {
@@ -51,6 +52,8 @@ export default function MessageDialog(props) {
     recipientReceivedNode.once(() => {
       console.log("messagesReceived updated");
     });
+
+    handleClose();
   }
 
   return (
@@ -66,7 +69,7 @@ export default function MessageDialog(props) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle className="dialog-title" id="alert-dialog-title">
-          Message Seller of {props.title} from: {ethID}
+          Message Seller of {props.title} {String(date)}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", alignItems: "flex-end" }}>
@@ -85,8 +88,8 @@ export default function MessageDialog(props) {
             className="confirm-option"
             onClick={() =>
               sendMessage({
+                to: "did:3:kjzl6cwe1jw147hk62cbl0uo9shatcnx7ywou6er13yb9uuhkxwy8yu5yn7uaon",
                 from: ethID,
-                to: "did:3:kjzl6cwe1jw149qgb89y6j9mdwwd6mtdyhqfxi86cnlqutduos3gtn8xzsqvui0",
                 message: currentMessage,
                 book: props.title,
               })

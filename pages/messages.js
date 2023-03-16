@@ -16,13 +16,14 @@ import Gun from "gun";
 export default function Messages() {
   const gun = Gun("http://localhost:8080/gun");
   const { ethID } = useContext(AppContext);
-  const [selectedConversation, setSelectedConversation] = useState("test");
-  const [selectedContactId, setSelectedContactId] = useState(null);
-  const [currentMessage, setCurrentMessage] = useState("");
-  const [messageArray, setMessageArray] = useState([]);
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [messageUsers, setMessageUsers] = useState([]);
+  const [selectedConversation, setSelectedConversation] = useState(""); // the eth ID of the selected contact
+  const [selectedContactId, setSelectedContactId] = useState(null); // index of the selected contact for UI purposes
+  const [currentMessage, setCurrentMessage] = useState(""); // message being typed
+  const [currentBook, setCurrentBook] = useState("");
+  const date = Date();
+
   const messagelist = [];
+  const sentMessageList = [];
   const userBookTitles = [];
 
   // get users sent and recieved nodes
@@ -35,19 +36,30 @@ export default function Messages() {
     messagelist.push(message);
   });
 
-  // get sent messages
+  // create an array of all sent messages
   messagesSentNode.map((message, id) => {
     messagelist.push(message);
   });
 
   console.log(messagelist);
+  // get sent messages
 
   // create information needed for contact cards
   messagelist.forEach((message) => {
-    if (message.to === ethID || message.from === ethID) {
-      // include messages sent by the user
-      const fromUser = message.from === ethID ? message.to : message.from;
-      const bookTitle = message.bookTitle;
+    if (message.to === ethID) {
+      const fromUser = message.from;
+      const bookTitle = message.book;
+      const userBookTitle = { fromUser, bookTitle };
+      if (
+        !userBookTitles.some(
+          (ubt) => ubt.fromUser === fromUser && ubt.bookTitle === bookTitle
+        )
+      ) {
+        userBookTitles.push(userBookTitle);
+      }
+    } else {
+      const fromUser = message.to;
+      const bookTitle = message.book;
       const userBookTitle = { fromUser, bookTitle };
       if (
         !userBookTitles.some(
@@ -59,11 +71,44 @@ export default function Messages() {
     }
   });
 
+  // sending a message
+
+  function sendMessage(data) {
+    // set message in user's messagesSent node
+    const message = {
+      to: data.to,
+      from: data.from,
+      message: data.message,
+      book: data.book,
+    };
+
+    const userSentNode = userNode.get("messagesSent");
+    userSentNode.set(message);
+
+    userSentNode.once(() => {
+      console.log("messagesSent updated with: " + message);
+    });
+
+    // set message in recipient's messagesReceived node
+    const recipientNode = gun.get(data.to);
+    const recipientReceivedNode = recipientNode.get("messagesReceived");
+    recipientReceivedNode.set(message);
+
+    recipientReceivedNode.once(() => {
+      console.log("messagesReceived updated");
+    });
+
+    setCurrentMessage("");
+  }
+
   // ENTER KEY MESSAGE SENDING
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && currentMessage !== "") {
       sendMessage({
-        content: currentMessage,
+        to: selectedConversation,
+        from: ethID,
+        message: currentMessage,
+        book: currentBook,
       });
     }
   };
@@ -78,12 +123,12 @@ export default function Messages() {
               key={index}
               name={userBookTitle.fromUser}
               letter={userBookTitle.fromUser.charAt(0)}
-              listing="ecks dee"
+              listing={userBookTitle.bookTitle}
               selected={selectedContactId === index}
               onClick={() => {
                 setSelectedContactId(index);
                 setSelectedConversation(userBookTitle.fromUser);
-                setSelectedContact(userBookTitle);
+                setCurrentBook(userBookTitle.bookTitle);
               }}
             />
           ))}
@@ -125,7 +170,10 @@ export default function Messages() {
                 sx={{ color: "action.active", mr: 1, my: 0.5 }}
                 onClick={() =>
                   sendMessage({
-                    content: currentMessage,
+                    to: selectedConversation,
+                    from: ethID,
+                    message: currentMessage,
+                    book: currentBook,
                   })
                 }
               />
