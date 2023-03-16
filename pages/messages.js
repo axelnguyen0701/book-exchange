@@ -9,9 +9,6 @@ import { useState, useContext, useEffect } from "react";
 import { AppContext } from "./context/MetaContext";
 import Gun from "gun";
 
-// ACCOUNT 0 (4 on metamask)  DID: did:3:kjzl6cwe1jw145oneizhocrl2pdyswo1syoeat8jvebu3tkal14sbsax582ofgd
-// ACCOUNT 0  (3 on metamask) did:3:kjzl6cwe1jw149qgb89y6j9mdwwd6mtdyhqfxi86cnlqutduos3gtn8xzsqvui0 // HARDCODED MESSAGE RECIPIENT FROM LISTING
-
 // Page for messaging
 export default function Messages() {
   const gun = Gun("http://localhost:8080/gun");
@@ -20,7 +17,6 @@ export default function Messages() {
   const [selectedContactId, setSelectedContactId] = useState(null); // index of the selected contact for UI purposes
   const [currentMessage, setCurrentMessage] = useState(""); // message being typed
   const [currentBook, setCurrentBook] = useState("");
-  const date = Date();
 
   const messagelist = [];
   const sentMessageList = [];
@@ -33,6 +29,7 @@ export default function Messages() {
 
   // create an array of all recieved messages
   messagesReceivedNode.map((message, id) => {
+    console.log(message);
     messagelist.push(message);
   });
 
@@ -40,6 +37,8 @@ export default function Messages() {
   messagesSentNode.map((message, id) => {
     messagelist.push(message);
   });
+
+  messagelist.sort((a, b) => a.timestamp - b.timestamp);
 
   console.log(messagelist);
   // get sent messages
@@ -80,6 +79,7 @@ export default function Messages() {
       from: data.from,
       message: data.message,
       book: data.book,
+      timestamp: new Date().getTime(),
     };
 
     const userSentNode = userNode.get("messagesSent");

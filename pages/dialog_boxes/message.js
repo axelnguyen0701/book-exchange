@@ -34,6 +34,7 @@ export default function MessageDialog(props) {
       from: data.from,
       message: data.message,
       book: data.book,
+      timestamp: new Date().getTime(),
     };
 
     const userNode = gun.get(ethID);
@@ -69,7 +70,7 @@ export default function MessageDialog(props) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle className="dialog-title" id="alert-dialog-title">
-          Message Seller of {props.title} {String(date)}
+          Message Seller of {props.title}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", alignItems: "flex-end" }}>
@@ -88,7 +89,7 @@ export default function MessageDialog(props) {
             className="confirm-option"
             onClick={() =>
               sendMessage({
-                to: "did:3:kjzl6cwe1jw147hk62cbl0uo9shatcnx7ywou6er13yb9uuhkxwy8yu5yn7uaon",
+                to: "did:3:kjzl6cwe1jw145zry09pxcagenpjifspwtb1evt2jey0as1p6uwynj2we7rwwwl",
                 from: ethID,
                 message: currentMessage,
                 book: props.title,
