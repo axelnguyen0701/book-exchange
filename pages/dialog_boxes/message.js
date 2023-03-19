@@ -15,7 +15,7 @@ export default function MessageDialog(props) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [open, setOpen] = useState(false);
   const { ethID, profile } = useContext(AppContext);
-  const gun = Gun("http://localhost:8080/gun");
+  const gun = Gun("cap-server-3ivpg.kinsta.app");
   const date = new Date();
 
   // opening and closing the dialog box
@@ -89,7 +89,7 @@ export default function MessageDialog(props) {
             className="confirm-option"
             onClick={() =>
               sendMessage({
-                to: "did:3:kjzl6cwe1jw145zry09pxcagenpjifspwtb1evt2jey0as1p6uwynj2we7rwwwl",
+                to: "did:3:kjzl6cwe1jw149kr85pyslokgvbg4ks0tu1s1oyvd7u3n61dshz43pcyxv9wpj2",
                 from: ethID,
                 message: currentMessage,
                 book: props.title,

@@ -11,7 +11,7 @@ import Gun from "gun";
 
 // Page for messaging
 export default function Messages() {
-  const gun = Gun("http://localhost:8080/gun");
+  const gun = Gun("cap-server-3ivpg.kinsta.app");
   const { ethID } = useContext(AppContext);
   const [selectedConversation, setSelectedConversation] = useState(""); // the eth ID of the selected contact
   const [selectedContactId, setSelectedContactId] = useState(null); // index of the selected contact for UI purposes
