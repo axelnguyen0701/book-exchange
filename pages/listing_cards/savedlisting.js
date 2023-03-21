@@ -63,7 +63,6 @@ export default function SavedListing(props) {
 				<PurchaseDialog
 					title={props.title}
 					pricing={props.pricing}
-					tokenId={props.tokenId}
 				></PurchaseDialog>
 
 				<Button size="small" className="option">

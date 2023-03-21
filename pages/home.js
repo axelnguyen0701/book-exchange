@@ -72,19 +72,20 @@ export default function Home() {
 
 	const renderedListings = nfts.map((e, i) => {
 		return (
-			<SavedListing
-				tokenId={e.tokenId}
-				key={i}
-				imgurl={e.image}
-				title={e.title}
-				author={e.author}
-				isbn={`ISBN: ${e.ISBN}`}
-				courses={e.course}
-				allowBid={e.allowBid}
-				pricing={e.price}
-				startingPrice={e.startingPrice}
-				retails="90"
-			/>
+			<div className="col-md-4" key={i}>
+				<SavedListing
+					tokenId={e.tokenId}
+					imgurl={e.image}
+					title={e.title}
+					author={e.author}
+					isbn={`ISBN: ${e.ISBN}`}
+					courses={e.course}
+					allowBid={e.allowBid}
+					pricing={e.price}
+					startingPrice={e.startingPrice}
+					retails="90"
+				/>
+			</div>
 		)
 	})
 
@@ -92,15 +93,15 @@ export default function Home() {
 		if (loadingState === "loaded" && !nfts.length)
 			return <Typography>Nothing to show yet</Typography>
 
-		return <div className="book-shelf">{renderedListings}</div>
+		return renderedListings
 	}
 
 	return (
 		<Container>
 			<ResponsiveAppBar />
 			<div className="titleHeader">
-				<h1 className="title">All Listings On Sale</h1>
-				{renderListings()}
+				<h1 className="title">Your Saved Listings</h1>
+				<div className="row"> {renderListings()}</div>
 			</div>
 		</Container>
 	)
