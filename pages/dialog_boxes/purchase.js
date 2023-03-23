@@ -36,10 +36,8 @@ export default function PurchaseDialog(props) {
 			BookMarketplace.abi,
 			signer
 		)
-		console.log(props.pricing, props.tokenId)
 		/* user will be prompted to pay the asking proces to complete the transaction */
 		const price = ethers.utils.parseUnits(props.pricing.toString())
-		console.log(price)
 		const transaction = await contract.createMarketSale(props.tokenId, {
 			value: price,
 		})
