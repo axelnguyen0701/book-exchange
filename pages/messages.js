@@ -11,7 +11,10 @@ import Gun from "gun";
 
 // Page for messaging
 export default function Messages() {
-  const gun = Gun("cap-server-3ivpg.kinsta.app");
+  const gun = Gun({
+    peers: ["https://capserver.onrender.com/gun"],
+  });
+
   const { ethID } = useContext(AppContext);
   const [selectedConversation, setSelectedConversation] = useState(""); // the eth ID of the selected contact
   const [selectedContactId, setSelectedContactId] = useState(null); // index of the selected contact for UI purposes
@@ -122,7 +125,6 @@ export default function Messages() {
             <Contact
               key={index}
               name={userBookTitle.fromUser}
-              letter={userBookTitle.fromUser.charAt(0)}
               listing={userBookTitle.bookTitle}
               selected={selectedContactId === index}
               onClick={() => {
