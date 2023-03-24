@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography"
 
 // This card is used for showing a user their own active listing
 export default function MyListing(props) {
+	console.log(props.courses)
 	return (
 		<Card className="book-card" sx={{ maxWidth: 345 }}>
 			<CardMedia sx={{ height: 290 }} image={props.imgurl} title="Book" />
@@ -32,16 +33,17 @@ export default function MyListing(props) {
 				>
 					{props.isbn}
 				</Typography>
-				{props.courses.map((e) => (
-					<Typography
-						key={e.URL}
-						className="info-text"
-						variant="body2"
-						color="text.secondary"
-					>
-						{e.name}
-					</Typography>
-				))}
+				{!!props.courses &&
+					props.courses.map((e) => (
+						<Typography
+							key={e.URL}
+							className="info-text"
+							variant="body2"
+							color="text.secondary"
+						>
+							{e.name}
+						</Typography>
+					))}
 
 				<Typography
 					className="price-text"
