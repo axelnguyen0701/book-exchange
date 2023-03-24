@@ -67,6 +67,9 @@ export default function Listings() {
 						title="Sociology in Action"
 						author="Myles Richer"
 						isbn="ISBN: 18371921"
+						courses={[
+							{ name: "SOCI-100", URL: "mycourseURL1.com" },
+						]}
 						pricing="40"
 						retails="75"
 					></MyListing>
@@ -75,6 +78,10 @@ export default function Listings() {
 						title="Interaction Design (3rd Ed)"
 						author="Thomas Park"
 						isbn="ISBN: 83917334"
+						courses={[
+							{ name: "CMPT-250", URL: "mycourseURL2.com" },
+							{ name: "CMPT-351", URL: "mycourseURL3.com" },
+						]}
 						pricing="80"
 						retails="105"
 					></MyListing>
