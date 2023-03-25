@@ -50,6 +50,7 @@ export default function Home() {
 						i.instantPrice.toString(),
 						"ether"
 					),
+					bidList: i.bidList,
 					tokenId: i.tokenId.toNumber(),
 					seller: i.seller,
 					owner: i.owner,
@@ -84,6 +85,7 @@ export default function Home() {
 					pricing={e.price}
 					startingPrice={e.startingPrice}
 					retails="90"
+					bidList={e.bidList}
 				/>
 			</div>
 		)
