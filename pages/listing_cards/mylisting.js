@@ -32,16 +32,17 @@ export default function MyListing(props) {
 				>
 					{props.isbn}
 				</Typography>
-				{props.courses.map((e) => (
-					<Typography
-						key={e.URL}
-						className="info-text"
-						variant="body2"
-						color="text.secondary"
-					>
-						{e.name}
-					</Typography>
-				))}
+				{!!props.courses &&
+					props.courses.map((e) => (
+						<Typography
+							key={e.URL}
+							className="info-text"
+							variant="body2"
+							color="text.secondary"
+						>
+							{e.name}
+						</Typography>
+					))}
 
 				<Typography
 					className="price-text"
