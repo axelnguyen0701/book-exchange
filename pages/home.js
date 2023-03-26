@@ -3,6 +3,7 @@ import { Container } from "@mui/system";
 import SavedListing from "./listing_cards/savedlisting";
 import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "./context/MetaContext";
+import Web3Modal from "web3modal";
 
 import { marketplaceAddress } from "../config";
 
@@ -13,13 +14,22 @@ import axios from "axios";
 
 // home page that displays users saved books
 export default function Home() {
-    // Load gloable user context
+    // Load global user context
     const { loaded, profile } = useContext(AppContext);
     const [nfts, setNfts] = useState([]);
     const [loadingState, setLoadingState] = useState("not-loaded");
+    const signerAddress = getSignerAddress();
     useEffect(() => {
         loadNFTs();
     }, []);
+
+    async function getSignerAddress() {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        return address;
+    }
+
     async function loadNFTs() {
         /* create a generic provider and query for unsold market items */
         const provider = new ethers.providers.JsonRpcProvider();
@@ -28,21 +38,22 @@ export default function Home() {
             BookMarketplace.abi,
             provider
         );
+        // fetch items from subgraph
         const data = await axios({
             url: 'http://127.0.0.1:8000/subgraphs/name/book-marketplace',
             method: 'post',
             data: {
                 query: `
                     query {
-                            listings(where: {sold: false}) {
-                              id
-                              tokenId
-                              allowBid
-                              seller
-                              owner
-                              startingPrice
-                              sold
-                              instantPrice
+                        listings(where: {sold: false, seller_not: "${(await signerAddress).toLowerCase()}"}) {
+                            id
+                            tokenId
+                            allowBid
+                            seller
+                            owner
+                            startingPrice
+                            sold
+                            instantPrice
                           }
                         }
                     `
