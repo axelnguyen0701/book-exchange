@@ -57,7 +57,7 @@ export default function Home() {
                 console.log(err)
                 return contract.fetchListings();
                 });
-
+                //TODO: add error handling for when the subgraph is down or returning bad data
         /*
          *  map over items returned from smart contract and format
          *  them as well as fetch their token metadata
