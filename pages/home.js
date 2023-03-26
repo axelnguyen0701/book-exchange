@@ -28,7 +28,36 @@ export default function Home() {
             BookMarketplace.abi,
             provider
         );
-        const data = await contract.fetchListings();
+        const data = await axios({
+            url: 'http://127.0.0.1:8000/subgraphs/name/book-marketplace',
+            method: 'post',
+            data: {
+                query: `
+                    query {
+                            listings(where: {sold: false}) {
+                              id
+                              tokenId
+                              allowBid
+                              seller
+                              owner
+                              startingPrice
+                              sold
+                              instantPrice
+                          }
+                        }
+                    `
+                }
+                        
+        }).then((result) => {
+            console.log(
+                "data returned:\n",
+                result.data)
+                return result.data.data.listings
+            }).catch((err) => {
+                console.log(err)
+                return contract.fetchListings();
+                });
+
         /*
          *  map over items returned from smart contract and format
          *  them as well as fetch their token metadata
@@ -44,10 +73,9 @@ export default function Home() {
                         return { name: courseName.data.name, URL: i };
                     })
                 );
-
                 let item = {
                     price: ethers.utils.formatEther(i.instantPrice),
-                    tokenId: i.tokenId.toNumber(),
+                    tokenId: i.tokenId,
                     seller: i.seller,
                     owner: i.owner,
                     allowBid: i.allowBid,
