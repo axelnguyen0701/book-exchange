@@ -26,7 +26,7 @@ const client = ipfsHttpClient({
     },
 });
 
-const DEDICATED_URL = "https://book-exchanged.infura-ipfs.io/ipfs/";
+const DEDICATED_URL = "https://book-exchange-korey-test.infura-ipfs.io/ipfs/";
 import { marketplaceAddress } from "../config";
 import BookMarketplace from "../artifacts/contracts/BookMarketplace.sol/BookMarketplace.json";
 import { useRouter } from "next/router";
