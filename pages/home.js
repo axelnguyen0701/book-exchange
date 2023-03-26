@@ -74,6 +74,7 @@ export default function Home() {
                     })
                 );
                 let item = {
+                    id: i.id,
                     price: ethers.utils.formatEther(i.instantPrice),
                     tokenId: i.tokenId,
                     seller: i.seller,
