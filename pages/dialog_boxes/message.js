@@ -44,18 +44,10 @@ export default function MessageDialog(props) {
     const userSentNode = userNode.get("messagesSent");
     userSentNode.set(message);
 
-    userSentNode.once(() => {
-      console.log("messagesSent updated with: " + message);
-    });
-
     // set message in recipient's messagesReceived node
     const recipientNode = gun.get(data.to);
     const recipientReceivedNode = recipientNode.get("messagesReceived");
     recipientReceivedNode.set(message);
-
-    recipientReceivedNode.once(() => {
-      console.log("messagesReceived updated");
-    });
 
     handleClose();
   }

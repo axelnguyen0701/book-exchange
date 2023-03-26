@@ -32,7 +32,6 @@ export default function Messages() {
 
   // create an array of all recieved messages
   messagesReceivedNode.map((message, id) => {
-    console.log(message);
     messagelist.push(message);
   });
 
@@ -42,9 +41,6 @@ export default function Messages() {
   });
 
   messagelist.sort((a, b) => a.timestamp - b.timestamp);
-
-  console.log(messagelist);
-  // get sent messages
 
   // create information needed for contact cards
   messagelist.forEach((message) => {
@@ -88,18 +84,10 @@ export default function Messages() {
     const userSentNode = userNode.get("messagesSent");
     userSentNode.set(message);
 
-    userSentNode.once(() => {
-      console.log("messagesSent updated with: " + message);
-    });
-
     // set message in recipient's messagesReceived node
     const recipientNode = gun.get(data.to);
     const recipientReceivedNode = recipientNode.get("messagesReceived");
     recipientReceivedNode.set(message);
-
-    recipientReceivedNode.once(() => {
-      console.log("messagesReceived updated");
-    });
 
     setCurrentMessage("");
   }
