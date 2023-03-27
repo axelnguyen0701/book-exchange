@@ -1,3 +1,4 @@
+
 import ResponsiveAppBar from "./navbar";
 import { Container } from "@mui/system";
 import SavedListing from "./listing_cards/savedlisting";
@@ -5,15 +6,17 @@ import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "./context/MetaContext";
 import Web3Modal from "web3modal";
 
-import { marketplaceAddress } from "../config";
 
-import BookMarketplace from "../artifacts/contracts/BookMarketplace.sol/BookMarketplace.json";
-import { Typography } from "@mui/material";
-import { ethers } from "ethers";
-import axios from "axios";
+import { marketplaceAddress } from "../config"
+
+import BookMarketplace from "../artifacts/contracts/BookMarketplace.sol/BookMarketplace.json"
+import { Typography } from "@mui/material"
+import { ethers } from "ethers"
+import axios from "axios"
 
 // home page that displays users saved books
 export default function Home() {
+
     // Load global user context
     const { loaded, profile } = useContext(AppContext);
     const [nfts, setNfts] = useState([]);
@@ -86,8 +89,11 @@ export default function Home() {
                 );
                 let item = {
                     id: i.id || 1,
-                    price: ethers.utils.formatEther(i.instantPrice),
-                    tokenId: i.tokenId,
+                    price: ethers.utils.formatUnits(
+						i.instantPrice.toString(),
+						"ether"
+					),
+                    tokenId: i.tokenId.toNumber(),
                     seller: i.seller,
                     owner: i.owner,
                     allowBid: i.allowBid,
@@ -105,39 +111,42 @@ export default function Home() {
         setLoadingState("loaded");
     }
 
-    //retrieve users saved books and map
 
-    const renderedListings = nfts.map((e, i) => {
-        return (
-            <SavedListing
-                key={i}
-                imgurl={e.image}
-                title={e.title}
-                author={e.author}
-                isbn={`ISBN: ${e.ISBN}`}
-                courses={e.course}
-                allowBid={e.allowBid}
-                pricing={e.price}
-                startingPrice={e.startingPrice}
-                retails="90"
-            />
-        );
-    });
+	//retrieve users saved books and map
 
-    const renderListings = () => {
-        if (loadingState === "loaded" && !nfts.length)
-            return <Typography>Nothing to show yet</Typography>;
+	const renderedListings = nfts.map((e, i) => {
+		return (
+			<div className="col-md-4" key={i}>
+				<SavedListing
+					tokenId={e.tokenId}
+					imgurl={e.image}
+					title={e.title}
+					author={e.author}
+					isbn={`ISBN: ${e.ISBN}`}
+					courses={e.course}
+					allowBid={e.allowBid}
+					pricing={e.price}
+					startingPrice={e.startingPrice}
+					retails="90"
+				/>
+			</div>
+		)
+	})
 
-        return <div className="book-shelf">{renderedListings}</div>;
-    };
+	const renderListings = () => {
+		if (loadingState === "loaded" && !nfts.length)
+			return <Typography>Nothing to show yet</Typography>
 
-    return (
-        <Container>
-            <ResponsiveAppBar />
-            <div className="titleHeader">
-                <h1 className="title">Your Saved Listings</h1>
-                {renderListings()}
-            </div>
-        </Container>
-    );
+		return renderedListings
+	}
+
+	return (
+		<Container>
+			<ResponsiveAppBar />
+			<div className="titleHeader">
+				<h1 className="title">Your Saved Listings</h1>
+				<div className="row"> {renderListings()}</div>
+			</div>
+		</Container>
+	)
 }
