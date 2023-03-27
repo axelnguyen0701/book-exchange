@@ -27,7 +27,8 @@ export default function Home() {
     }, []);
 
     async function getSignerAddress() {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const connection = await new Web3Modal().connect();
+        const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
         const address = await signer.getAddress();
         return address;
@@ -93,7 +94,7 @@ export default function Home() {
 						i.instantPrice.toString(),
 						"ether"
 					),
-                    tokenId: i.tokenId.toNumber(),
+                    tokenId: i.tokenId,
                     seller: i.seller,
                     owner: i.owner,
                     allowBid: i.allowBid,

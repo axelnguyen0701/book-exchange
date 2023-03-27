@@ -30,7 +30,8 @@ export default function PurchaseDialog(props) {
 		const web3Modal = new Web3Modal()
 		const connection = await web3Modal.connect()
 		const provider = new ethers.providers.Web3Provider(connection)
-		const signer = provider.getSigner()
+		const signer = (await provider.getSigner())
+		console.log("signer: ", signer.getAddress())
 		const contract = new ethers.Contract(
 			marketplaceAddress,
 			BookMarketplace.abi,

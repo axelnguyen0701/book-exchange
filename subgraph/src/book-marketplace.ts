@@ -102,8 +102,9 @@ export function handleTransfer(event: Transfer): void {
   let listing = Listing.load(event.params.tokenId.toHex())
 
   //Basic null check
-  if (listing) {
+  if (listing != null) {
     listing.owner = event.params.to
+    listing.sold = true
     listing.save()
   }
 }
