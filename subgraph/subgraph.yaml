@@ -26,7 +26,7 @@ dataSources:
           handler: handleApproval
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
-        - event: ListingCreated(indexed uint256,address,address,uint256,uint256,bool,bool)
+        - event: ListingCreated(indexed uint256,address,address,uint256,uint256,bool,bool,string)
           handler: handleListingCreated
         - event: ListingUpdated(indexed uint256,address,address,uint256,uint256,bool,bool)
           handler: handleListingUpdated

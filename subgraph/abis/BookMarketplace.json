@@ -123,6 +123,12 @@
         "internalType": "bool",
         "name": "sold",
         "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "did",
+        "type": "string"
       }
     ],
     "name": "ListingCreated",
@@ -322,6 +328,11 @@
         "internalType": "bool",
         "name": "allowBid",
         "type": "bool"
+      },
+      {
+        "internalType": "string",
+        "name": "did",
+        "type": "string"
       }
     ],
     "name": "createToken",
@@ -397,6 +408,11 @@
             "internalType": "bool",
             "name": "sold",
             "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "did",
+            "type": "string"
           }
         ],
         "internalType": "struct BookMarketplace.Listing[]",
@@ -469,6 +485,11 @@
             "internalType": "bool",
             "name": "sold",
             "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "did",
+            "type": "string"
           }
         ],
         "internalType": "struct BookMarketplace.Listing[]",
@@ -541,6 +562,11 @@
             "internalType": "bool",
             "name": "sold",
             "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "did",
+            "type": "string"
           }
         ],
         "internalType": "struct BookMarketplace.Listing[]",
@@ -780,6 +806,11 @@
             "internalType": "bool",
             "name": "sold",
             "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "did",
+            "type": "string"
           }
         ],
         "internalType": "struct BookMarketplace.Listing",

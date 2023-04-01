@@ -58,6 +58,7 @@ export default function Home() {
                             startingPrice
                             sold
                             instantPrice
+                            did
                           }
                         }
                     `

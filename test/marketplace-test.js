@@ -11,6 +11,7 @@ describe("BookMarketplace", () => {
     let defaultAllowBid = true;
     let defaultTokenURI = "https://www.mytokenlocation.com";
     let defaultBiddingPrice = ethers.utils.parseUnits("0.001", "ether");
+    let defaultDID = ""
 
     before(async () => {
         // Deploy market
@@ -190,6 +191,7 @@ describe("BookMarketplace", () => {
                 startPrice,
                 startPrice,
                 defaultAllowBid,
+                defaultDID,
                 { value: defaultListingPrice }
             );
             const listingId = await getIdFromCreateTxResponse(txResponse);
@@ -237,6 +239,7 @@ describe("BookMarketplace", () => {
                 defaultInstantPrice,
                 defaultStartingPrice,
                 Boolean(true),
+                defaultDID,
                 { value: defaultListingPrice }
             );
 
@@ -266,6 +269,7 @@ describe("BookMarketplace", () => {
                 defaultInstantPrice,
                 defaultStartingPrice,
                 Boolean(false),
+                defaultDID,
                 { value: defaultListingPrice }
             );
 
@@ -536,6 +540,7 @@ describe("BookMarketplace", () => {
                 defaultInstantPrice,
                 defaultStartingPrice,
                 Boolean(true),
+                defaultDID,
                 { value: defaultListingPrice }
             );
 
@@ -617,7 +622,8 @@ describe("BookMarketplace", () => {
             defaultInstantPrice,
             defaultStartingPrice,
             defaultAllowBid,
-            { value: defaultListingPrice }
+            defaultDID,
+            { value: defaultListingPrice },
         );
 
         return txResponse;

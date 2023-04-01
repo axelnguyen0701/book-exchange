@@ -1,10 +1,3 @@
-type ExampleEntity @entity {
-  id: ID!
-  count: BigInt!
-  owner: Bytes! # address
-  approved: Bytes! # address
-}
-
 type Listing @entity {
   id: ID!
   tokenId: BigInt!
@@ -15,6 +8,7 @@ type Listing @entity {
   allowBid: Boolean!
   sold: Boolean!
   bidList: [Bid!]! @derivedFrom(field: "listing")
+  did: String!
 }
 
 type Bid @entity {

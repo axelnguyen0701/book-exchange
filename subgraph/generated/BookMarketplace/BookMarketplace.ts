@@ -128,6 +128,10 @@ export class ListingCreated__Params {
   get sold(): boolean {
     return this._event.parameters[6].value.toBoolean();
   }
+
+  get did(): string {
+    return this._event.parameters[7].value.toString();
+  }
 }
 
 export class ListingUpdated extends ethereum.Event {
@@ -234,6 +238,10 @@ export class BookMarketplace__fetchItemsListedResultValue0Struct extends ethereu
   get sold(): boolean {
     return this[7].toBoolean();
   }
+
+  get did(): string {
+    return this[8].toString();
+  }
 }
 
 export class BookMarketplace__fetchItemsListedResultValue0BidListStruct extends ethereum.Tuple {
@@ -286,6 +294,10 @@ export class BookMarketplace__fetchListingsResultValue0Struct extends ethereum.T
   get sold(): boolean {
     return this[7].toBoolean();
   }
+
+  get did(): string {
+    return this[8].toString();
+  }
 }
 
 export class BookMarketplace__fetchListingsResultValue0BidListStruct extends ethereum.Tuple {
@@ -335,6 +347,10 @@ export class BookMarketplace__fetchMyNFTsResultValue0Struct extends ethereum.Tup
 
   get sold(): boolean {
     return this[7].toBoolean();
+  }
+
+  get did(): string {
+    return this[8].toString();
   }
 }
 
@@ -416,6 +432,10 @@ export class BookMarketplace__getListingByTokenIdResultValue0Struct extends ethe
   get sold(): boolean {
     return this[7].toBoolean();
   }
+
+  get did(): string {
+    return this[8].toString();
+  }
 }
 
 export class BookMarketplace__getListingByTokenIdResultValue0BidListStruct extends ethereum.Tuple {
@@ -461,7 +481,7 @@ export class BookMarketplace extends ethereum.SmartContract {
   > {
     let result = super.call(
       "fetchItemsListed",
-      "fetchItemsListed():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool)[])",
+      "fetchItemsListed():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool,string)[])",
       []
     );
 
@@ -475,7 +495,7 @@ export class BookMarketplace extends ethereum.SmartContract {
   > {
     let result = super.tryCall(
       "fetchItemsListed",
-      "fetchItemsListed():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool)[])",
+      "fetchItemsListed():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool,string)[])",
       []
     );
     if (result.reverted) {
@@ -492,7 +512,7 @@ export class BookMarketplace extends ethereum.SmartContract {
   fetchListings(): Array<BookMarketplace__fetchListingsResultValue0Struct> {
     let result = super.call(
       "fetchListings",
-      "fetchListings():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool)[])",
+      "fetchListings():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool,string)[])",
       []
     );
 
@@ -506,7 +526,7 @@ export class BookMarketplace extends ethereum.SmartContract {
   > {
     let result = super.tryCall(
       "fetchListings",
-      "fetchListings():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool)[])",
+      "fetchListings():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool,string)[])",
       []
     );
     if (result.reverted) {
@@ -521,7 +541,7 @@ export class BookMarketplace extends ethereum.SmartContract {
   fetchMyNFTs(): Array<BookMarketplace__fetchMyNFTsResultValue0Struct> {
     let result = super.call(
       "fetchMyNFTs",
-      "fetchMyNFTs():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool)[])",
+      "fetchMyNFTs():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool,string)[])",
       []
     );
 
@@ -535,7 +555,7 @@ export class BookMarketplace extends ethereum.SmartContract {
   > {
     let result = super.tryCall(
       "fetchMyNFTs",
-      "fetchMyNFTs():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool)[])",
+      "fetchMyNFTs():((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool,string)[])",
       []
     );
     if (result.reverted) {
@@ -729,7 +749,7 @@ export class BookMarketplace extends ethereum.SmartContract {
   ): BookMarketplace__getListingByTokenIdResultValue0Struct {
     let result = super.call(
       "getListingByTokenId",
-      "getListingByTokenId(uint256):((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool))",
+      "getListingByTokenId(uint256):((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool,string))",
       [ethereum.Value.fromUnsignedBigInt(tokenId)]
     );
 
@@ -745,7 +765,7 @@ export class BookMarketplace extends ethereum.SmartContract {
   > {
     let result = super.tryCall(
       "getListingByTokenId",
-      "getListingByTokenId(uint256):((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool))",
+      "getListingByTokenId(uint256):((uint256,address,address,uint256,uint256,bool,(address,uint256,bool)[],bool,string))",
       [ethereum.Value.fromUnsignedBigInt(tokenId)]
     );
     if (result.reverted) {
@@ -1171,6 +1191,10 @@ export class CreateTokenCall__Inputs {
 
   get allowBid(): boolean {
     return this._call.inputValues[3].value.toBoolean();
+  }
+
+  get did(): string {
+    return this._call.inputValues[4].value.toString();
   }
 }
 

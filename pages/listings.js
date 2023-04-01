@@ -82,6 +82,7 @@ export default function Listings() {
                             startingPrice
                             sold
                             instantPrice
+							did
                           }
                         }
                     `
