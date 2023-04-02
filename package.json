@@ -6,7 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "graph-test": "graph test",
+    "graph-codegen": "cd ./subgraph && graph codegen",
+    "graph-build": "cd ./subgraph && graph build",
+    "graph-local": "docker-compose up",
+    "graph-local-clean": "docker-compose down -v && docker-compose rm -v && rm -rf data/ipfs data/postgres",
+    "create-local": "graph create --node http://127.0.0.1:8020 book-marketplace",
+    "deploy-local": "cd ./subgraph && graph deploy --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020 book-marketplace",
+    "hardhat-local": "hardhat node --hostname 0.0.0.0"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -34,6 +42,9 @@
     "web3modal": "^1.9.11"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.1"
+    "@graphprotocol/graph-cli": "^0.33.0",
+    "@graphprotocol/hardhat-graph": "^0.1.0-alpha.2",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "hardhat-graph": "https://github.com/graphprotocol/hardhat-graph"
   }
 }

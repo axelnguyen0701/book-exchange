@@ -1,7 +1,7 @@
 import ResponsiveAppBar from "./navbar";
 import { Container } from "@mui/system";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import MuiToggleButton from "@mui/material/ToggleButton";
 import { styled } from "@mui/material/styles";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -13,6 +13,7 @@ import { create as ipfsHttpClient } from "ipfs-http-client";
 import Web3Modal from "web3modal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AppContext } from "./context/MetaContext";
 const projectId = process.env.INFURA_IPFS_PROJECT_ID;
 const projectSecret = process.env.INFURA_IPFS_PROJECT_SECRET;
 const projectIdAndSecret = `${projectId}:${projectSecret}`;
@@ -41,7 +42,8 @@ const notify = () =>
     theme: "colored",
   });
 
-const DEDICATED_URL = "https://book-exchange1.infura-ipfs.io/ipfs/";
+const DEDICATED_URL = "https://book-exchange-korey-test.infura-ipfs.io/ipfs/";
+
 import { marketplaceAddress } from "../config";
 import BookMarketplace from "../artifacts/contracts/BookMarketplace.sol/BookMarketplace.json";
 import { useRouter } from "next/router";
@@ -126,6 +128,7 @@ const FileInput = ({ setFileURL }) => {
 
 // Used to create a listing
 export default function CreateListing() {
+  const { ethID } = useContext(AppContext);
   const [alignment, setAlignment] = useState("active");
   const [header, setHeader] = useState("Create an Instant Sale Listing");
   const [formInput, updateFormInput] = useState({
@@ -135,6 +138,7 @@ export default function CreateListing() {
     courses: "",
     instantPrice: "",
     startingPrice: "",
+    did: ""
   });
   const [fileURL, setFileURL] = useState(null);
   const router = useRouter();
@@ -207,6 +211,7 @@ export default function CreateListing() {
     const provider = new ethers.providers.Web3Provider(connection);
     const signer = provider.getSigner();
 
+
     /* create the NFT */
     const price = ethers.utils.parseUnits(
       alignment === "active"
@@ -235,12 +240,14 @@ export default function CreateListing() {
 
     let listingPrice = await contract.getListingPrice();
     listingPrice = listingPrice.toString();
+    console.log("ethID: ", ethID);
     try {
       let transaction = await contract.createToken(
         url,
         price,
         bidPrice,
         allowBid,
+        ethID,
         {
           value: listingPrice,
         }

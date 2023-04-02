@@ -36,6 +36,7 @@ contract BookMarketplace is ERC721URIStorage {
         bool allowBid;
         Bid[] bidList;
         bool sold;
+        string did;
     }
 
     /* events */
@@ -47,8 +48,9 @@ contract BookMarketplace is ERC721URIStorage {
         uint256 instantPrice,
         uint256 startingPrice,
         bool allowBid,
-        Bid[] bidList,
-        bool sold
+        // Bid[] bidList,
+        bool sold,
+        string did
     );
 
     event ListingUpdated(
@@ -58,8 +60,14 @@ contract BookMarketplace is ERC721URIStorage {
         uint256 instantPrice,
         uint256 startingPrice,
         bool allowBid,
-        Bid[] bidList,
+        // Bid[] bidList,
         bool sold
+    );
+
+    event BidAdded(
+        uint256 indexed tokenId,
+        address bidder,
+        uint256 bidAmount
     );
 
     /* modifiers */
@@ -152,6 +160,8 @@ contract BookMarketplace is ERC721URIStorage {
         newBid.bidder = msg.sender;
         newBid.bidAmount = bidAmount;
         listing.bidList.push(newBid);
+        
+        emit BidAdded(tokenId, msg.sender, bidAmount);
     }
 
     // Returns the bid list for a given tokenId
@@ -260,14 +270,15 @@ contract BookMarketplace is ERC721URIStorage {
         string memory tokenURI,
         uint256 instantPrice,
         uint256 startingPrice,
-        bool allowBid
+        bool allowBid,
+        string memory did
     ) public payable returns (uint256) {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
 
         _mint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
-        createMarketItem(newTokenId, instantPrice, startingPrice, allowBid);
+        createMarketItem(newTokenId, instantPrice, startingPrice, allowBid, did);
         return _tokenIds.current();
     }
 
@@ -275,7 +286,8 @@ contract BookMarketplace is ERC721URIStorage {
         uint256 tokenId,
         uint256 instantPrice,
         uint256 startingPrice,
-        bool allowBid
+        bool allowBid,
+        string memory did
     ) private {
         require(instantPrice > 0, "Price must be at least 1 wei");
         require(
@@ -292,6 +304,7 @@ contract BookMarketplace is ERC721URIStorage {
         listing.startingPrice = startingPrice;
         listing.allowBid = allowBid;
         listing.bidList.push(emptyBid);
+        listing.did = did;
 
         idToMarketItem[tokenId] = listing;
 
@@ -303,8 +316,9 @@ contract BookMarketplace is ERC721URIStorage {
             instantPrice,
             startingPrice,
             allowBid,
-            listing.bidList,
-            false
+            // listing.bidList,
+            false,
+            did
         );
     }
 

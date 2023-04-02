@@ -1,0 +1,20 @@
+type Listing @entity {
+  id: ID!
+  tokenId: BigInt!
+  seller: Bytes! # address
+  owner: Bytes! # address
+  instantPrice: BigInt!
+  startingPrice: BigInt!
+  allowBid: Boolean!
+  sold: Boolean!
+  bidList: [Bid!]! @derivedFrom(field: "listing")
+  did: String!
+}
+
+type Bid @entity {
+  id: ID!
+  listing: Listing!
+  bidder: Bytes! # address
+  amount: BigInt!
+}
+
