@@ -68,6 +68,7 @@ export default function SavedListing(props) {
 					allowBid={props.allowBid}
 					startingPrice={props.startingPrice}
 					bidList={props.bidList}
+					seller={props.seller}
 				></PurchaseDialog>
 
 				<Button size="small" className="option">

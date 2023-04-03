@@ -6,10 +6,92 @@ import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Paper from "@mui/material/Paper"
 import { ethers } from "ethers"
-import { Container, Typography } from "@mui/material"
+import { Button, Container, Typography } from "@mui/material"
+import { useEffect, useState } from "react"
+import Web3Modal from "web3modal"
+import { marketplaceAddress } from "@/config"
+import BookMarketplace from "../../artifacts/contracts/BookMarketplace.sol/BookMarketplace.json"
+import { useRouter } from "next/router"
 
-export default function BidTable({ bidList }) {
-	console.log(bidList)
+export default function BidTable({ bidList, seller, tokenId }) {
+	const [isSeller, setIsSeller] = useState(false)
+	const [isAcceptedBidder, setIsAcceptedBidder] = useState(false)
+	const router = useRouter()
+
+	useEffect(() => {
+		async function checkIsSeller() {
+			const web3Modal = new Web3Modal()
+			const connection = await web3Modal.connect()
+			const provider = new ethers.providers.Web3Provider(connection)
+			const signer = provider.getSigner()
+			const signerAddress = await signer.getAddress()
+
+			setIsSeller(seller === signerAddress)
+		}
+		checkIsSeller()
+	}, [seller])
+
+	useEffect(() => {
+		async function checkIsAcceptedBidder() {
+			const web3Modal = new Web3Modal()
+			const connection = await web3Modal.connect()
+			const provider = new ethers.providers.Web3Provider(connection)
+			const signer = provider.getSigner()
+			const signerAddress = await signer.getAddress()
+
+			setIsAcceptedBidder(
+				bidList[bidList.length - 1].bidder === signerAddress
+			)
+		}
+		checkIsAcceptedBidder()
+	}, [bidList])
+
+	async function acceptBidHandler() {
+		const web3Modal = new Web3Modal()
+		const connection = await web3Modal.connect()
+		const provider = new ethers.providers.Web3Provider(connection)
+		const signer = provider.getSigner()
+		const contract = new ethers.Contract(
+			marketplaceAddress,
+			BookMarketplace.abi,
+			signer
+		)
+
+		try {
+			const transaction = await contract.createBiddingSale(tokenId)
+			await transaction.wait()
+			router.push("/home")
+		} catch (e) {
+			alert(e)
+		}
+	}
+
+	async function confirmBidHandler() {
+		const web3Modal = new Web3Modal()
+		const connection = await web3Modal.connect()
+		const provider = new ethers.providers.Web3Provider(connection)
+		const signer = provider.getSigner()
+		const contract = new ethers.Contract(
+			marketplaceAddress,
+			BookMarketplace.abi,
+			signer
+		)
+
+		try {
+			const transaction = await contract.acceptBiddingSale(
+				tokenId,
+				bidList.length - 1,
+				{
+					value: bidList[bidList.length - 1].bidAmount.toString(),
+				}
+			)
+			await transaction.wait()
+			router.push("/mybooks")
+		} catch (e) {
+			alert(e)
+		}
+	}
+
 	if (bidList.length === 1) {
 		return (
 			<Container>
@@ -27,6 +109,12 @@ export default function BidTable({ bidList }) {
 						<TableCell align="right">Bidder</TableCell>
 						<TableCell align="right">Amount</TableCell>
 						<TableCell align="right">Accepted</TableCell>
+						{isSeller && (
+							<TableCell align="right">Accept</TableCell>
+						)}
+						{isAcceptedBidder && (
+							<TableCell align="right">Confirm</TableCell>
+						)}
 					</TableRow>
 				</TableHead>
 				<TableBody>
@@ -57,6 +145,23 @@ export default function BidTable({ bidList }) {
 								<TableCell align="right">
 									{bid.chosen ? "Yes" : "No"}
 								</TableCell>
+								{isSeller && index === 0 && (
+									<TableCell align="right">
+										<Button
+											onClick={acceptBidHandler}
+											disabled={bid.chosen}
+										>
+											Accept
+										</Button>
+									</TableCell>
+								)}
+								{isAcceptedBidder && bid.chosen && (
+									<TableCell align="right">
+										<Button onClick={confirmBidHandler}>
+											Confirm
+										</Button>
+									</TableCell>
+								)}
 							</TableRow>
 						))}
 				</TableBody>

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Button from "@mui/material/Button"
 import Dialog from "@mui/material/Dialog"
 import DialogActions from "@mui/material/DialogActions"
@@ -20,7 +20,15 @@ import {
 import BidTable from "../bids/bidTable"
 
 // Component used for purchasing an instant sale listing
-export default function PurchaseDialog(props) {
+export default function PurchaseDialog({
+	title,
+	pricing,
+	tokenId,
+	allowBid,
+	startingPrice,
+	bidList,
+	seller,
+}) {
 	const [open, setOpen] = useState(false)
 	const [biddingPrice, setBiddingPrice] = useState("")
 
@@ -52,8 +60,8 @@ export default function PurchaseDialog(props) {
 			signer
 		)
 		/* user will be prompted to pay the asking proces to complete the transaction */
-		const price = ethers.utils.parseUnits(props.pricing.toString())
-		const transaction = await contract.createMarketSale(props.tokenId, {
+		const price = ethers.utils.parseUnits(pricing.toString())
+		const transaction = await contract.createMarketSale(tokenId, {
 			value: price,
 		})
 		await transaction.wait()
@@ -74,10 +82,10 @@ export default function PurchaseDialog(props) {
 		/* user will be prompted to pay the asking proces to complete the transaction */
 		const parsedBiddingPrice = ethers.utils.parseUnits(biddingPrice)
 
-		const latestBid = props.bidList.find((e) => e.bidder === signerAddress)
+		const latestBid = bidList.find((e) => e.bidder === signerAddress)
 		try {
 			const transaction = await contract.addBid(
-				props.tokenId,
+				tokenId,
 				parsedBiddingPrice,
 				{
 					value: ethers.utils.parseUnits(
@@ -93,7 +101,7 @@ export default function PurchaseDialog(props) {
 	}
 
 	const renderDialog = () => {
-		if (props.allowBid) {
+		if (allowBid) {
 			return (
 				<>
 					<Button
@@ -115,15 +123,20 @@ export default function PurchaseDialog(props) {
 							className="dialog-title"
 							id="alert-dialog-title"
 						>
-							Confirm Bidding of {props.title}?
+							Confirm Bidding of {title}?
 						</DialogTitle>
 						<DialogContent>
-							<BidTable bidList={props.bidList} />
+							<BidTable
+								bidList={bidList}
+								seller={seller}
+								tokenId={tokenId}
+							/>
+
 							<DialogContentText
 								className="dialog-content"
 								id="alert-dialog-description"
 							>
-								Starting price is: ${props.startingPrice} ETH
+								Starting price is: ${startingPrice} ETH
 							</DialogContentText>
 							<FormControl fullWidth sx={{ m: 1 }}>
 								<InputLabel htmlFor="outlined-adornment-amount">
@@ -182,14 +195,14 @@ export default function PurchaseDialog(props) {
 						className="dialog-title"
 						id="alert-dialog-title"
 					>
-						Confirm Purchase of {props.title}?
+						Confirm Purchase of {title}?
 					</DialogTitle>
 					<DialogContent>
 						<DialogContentText
 							className="dialog-content"
 							id="alert-dialog-description"
 						>
-							You will be charged {props.pricing} ETH
+							You will be charged {pricing} ETH
 						</DialogContentText>
 					</DialogContent>
 					<DialogActions className="button-box">

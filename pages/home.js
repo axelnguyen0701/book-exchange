@@ -75,6 +75,7 @@ export default function Home() {
 		return (
 			<div className="col-md-4" key={i}>
 				<SavedListing
+					seller={e.seller}
 					tokenId={e.tokenId}
 					imgurl={e.image}
 					title={e.title}
