@@ -133,7 +133,7 @@ export default function CreateListing() {
 		author: "",
 		ISBN: "",
 		courses: "",
-		instantPrice: "",
+		instantPrice: "0",
 		startingPrice: "",
 	})
 	const [fileURL, setFileURL] = useState(null)
@@ -396,7 +396,7 @@ export default function CreateListing() {
 				<TextField
 					className="create-input"
 					id="outlined-basic"
-					label="Ex. 35$"
+					label="Price in ETH"
 					variant="outlined"
 					value={
 						alignment === "active"
