@@ -417,28 +417,7 @@ export default function CreateListing() {
 						})
 					}}
 				/>
-				<Typography
-					className="search-header"
-					gutterBottom
-					variant="h5"
-					component="div"
-					fontWeight="bold"
-				>
-					Instant Price
-				</Typography>
-				<TextField
-					className="create-input"
-					id="outlined-basic"
-					label="Ex. 35$"
-					variant="outlined"
-					value={formInput.instantPrice}
-					onChange={(e) => {
-						updateFormInput({
-							...formInput,
-							instantPrice: e.target.value,
-						})
-					}}
-				/>
+
 				<ThemeProvider theme={theme}>
 					<div className="search-button-box">
 						<Button
