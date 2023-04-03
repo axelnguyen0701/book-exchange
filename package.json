@@ -39,6 +39,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-toastify": "^9.1.1",
+    "tslib": "^2.5.0",
     "web3modal": "^1.9.11"
   },
   "devDependencies": {

@@ -230,7 +230,7 @@ export default function Listings() {
 					</ToggleButtonGroup>
 				</div>
 				<div className="book-shelf">
-					<MyListing
+					{/* <MyListing
 						imgurl="https://i.ebayimg.com/images/g/pwYAAOSwbDdji-Dn/s-l500.jpg"
 						title="Sociology in Action"
 						author="Myles Richer"
@@ -252,7 +252,7 @@ export default function Listings() {
 						]}
 						pricing="80"
 						retails="105"
-					></MyListing>
+					></MyListing> */}
 				</div>
 				<div className="row"> {renderListings()}</div>
 			</Container>
@@ -283,7 +283,7 @@ export default function Listings() {
 						</ToggleButton>
 					</ToggleButtonGroup>
 				</div>
-				<div className="book-shelf">
+				{/* <div className="book-shelf">
 					<ClosedListing
 						imgurl="https://media.karousell.com/media/photos/products/2020/9/1/oxford_complete_chemistry_text_1598935446_e60666e6_progressive.jpg"
 						title="Complete Chemistry"
@@ -292,7 +292,7 @@ export default function Listings() {
 						courses="CMPT 250, DESN 223"
 						outcome="Sold: 36$"
 					></ClosedListing>
-				</div>
+				</div> */}
 				<div className="row2"> {renderOldListings()}</div>
 			</Container>
 		)
