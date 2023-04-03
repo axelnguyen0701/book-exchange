@@ -25,6 +25,7 @@
     "eslint-config-next": "13.1.2",
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.7.2",
+    "gun": "^0.2020.1239",
     "hardhat": "^2.12.6",
     "ipfs-http-client": "^60.0.0",
     "next": "13.1.2",

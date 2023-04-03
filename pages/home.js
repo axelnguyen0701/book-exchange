@@ -1,3 +1,4 @@
+
 import ResponsiveAppBar from "./navbar"
 import { Container } from "@mui/system"
 import SavedListing from "./listing_cards/savedlisting"
@@ -14,7 +15,7 @@ import axios from "axios"
 // home page that displays users saved books
 export default function Home() {
 	// Load gloable user context
-	const { loaded, profile } = useContext(AppContext)
+	const { loaded, profile, ethID } = useContext(AppContext)
 	const [nfts, setNfts] = useState([])
 	const [loadingState, setLoadingState] = useState("not-loaded")
 	useEffect(() => {
@@ -100,9 +101,10 @@ export default function Home() {
 		<Container>
 			<ResponsiveAppBar />
 			<div className="titleHeader">
-				<h1 className="title">Your Saved Listings</h1>
+				<h1 className="title">Your Saved Listings  {ethID}</h1>
 				<div className="row"> {renderListings()}</div>
 			</div>
 		</Container>
 	)
+
 }

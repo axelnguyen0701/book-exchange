@@ -12,6 +12,8 @@ const MetaProvider = ({ children }) => {
   const [localDid, setDid] = useState(null);
   const [selfId, setSelfId] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [ethID, setEthId] = useState(""); // setting etherium DID
+  const [node, setNode] = useState(""); // setting users gun node
   const [showGreeting, setShowGreeting] = useState(false);
   const selfIdRef = useRef(null);
   const didRef = useRef(null);
@@ -23,6 +25,7 @@ const MetaProvider = ({ children }) => {
   const connect = async () => {
     const cdata = await webClient();
     const { id, selfId, error } = cdata;
+    setEthId(id);
     if (error) {
       console.log("error: ", error);
       return;
@@ -104,6 +107,8 @@ const MetaProvider = ({ children }) => {
         setPic,
         updateProfile,
         readProfile,
+        localDid,
+        ethID,
       }}
     >
       {children}

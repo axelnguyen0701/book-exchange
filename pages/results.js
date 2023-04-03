@@ -1,12 +1,15 @@
 import ResponsiveAppBar from "./navbar";
 import { Container } from "@mui/system";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import SearchResult from "./listing_cards/searchresult";
+import { AppContext } from "./context/MetaContext";
 
 // Page for showing broad search results
 export default function Results() {
   const [noResults, setNoResults] = useState(2);
   const [title, setTitle] = useState("Psychology Textbook");
+  const { loaded, profile } = useContext(AppContext);
+
   return (
     <Container>
       <ResponsiveAppBar></ResponsiveAppBar>

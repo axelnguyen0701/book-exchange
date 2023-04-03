@@ -5,9 +5,11 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/router";
 
 // This card shows listings of the same book grouped together under search results
 export default function SearchResult(props) {
+  const router = useRouter();
   return (
     <Card className="book-card" sx={{ maxWidth: 345 }}>
       <CardMedia sx={{ height: 290 }} image={props.imgurl} title="Book" />
@@ -52,7 +54,11 @@ export default function SearchResult(props) {
         </Typography>
       </CardContent>
       <CardActions className="button-box">
-        <Button size="small" className="view-listings" href="/resultslistings">
+        <Button
+          size="small"
+          className="view-listings"
+          onClick={() => router.push("/resultslistings")}
+        >
           View Listings
         </Button>
       </CardActions>
