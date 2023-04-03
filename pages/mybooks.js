@@ -74,9 +74,10 @@ export default function MyAssets() {
 					<h1 className="title">No NFTs owned</h1>
 				</div>
 			)}
-			<div className="flex justify-center">
-				<div className="p-4">
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+
+			<div className="titleHeader">
+				<div className="row">
+					<div className="col-md-4">
 						{nfts.map((nft, i) => (
 							<MyListing
 								key={nft.tokenId}
