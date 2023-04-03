@@ -17,6 +17,7 @@ import {
 	OutlinedInput,
 	TextField,
 } from "@mui/material"
+import BidTable from "../bids/bidTable"
 
 // Component used for purchasing an instant sale listing
 export default function PurchaseDialog(props) {
@@ -106,6 +107,7 @@ export default function PurchaseDialog(props) {
 						className="dialog-container"
 						open={open}
 						onClose={handleClose}
+						maxWidth="md"
 						aria-labelledby="alert-dialog-title"
 						aria-describedby="alert-dialog-description"
 					>
@@ -116,6 +118,7 @@ export default function PurchaseDialog(props) {
 							Confirm Bidding of {props.title}?
 						</DialogTitle>
 						<DialogContent>
+							<BidTable bidList={props.bidList} />
 							<DialogContentText
 								className="dialog-content"
 								id="alert-dialog-description"
