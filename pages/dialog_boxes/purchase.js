@@ -134,7 +134,7 @@ export default function PurchaseDialog({
 							/>
 
 							<DialogContentText
-								className="dialog-content"
+								className="table"
 								id="alert-dialog-description"
 							>
 								Starting price is: {startingPrice} ETH

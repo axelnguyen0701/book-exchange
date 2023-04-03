@@ -344,6 +344,14 @@
  
 }
 
+/* BIDDING */
+
+.table {
+  margin: 2%;
+  text-align: center;
+  width: 90%;
+}
+
 /* Hide scrollbar for webkit browsers */
 ::-webkit-scrollbar {
   display: none;
