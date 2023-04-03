@@ -48,8 +48,9 @@ export default function Search() {
     const authorRegex = new RegExp(authorTokens.join("|"), "gim")
     const isbnRegex = new RegExp(isbnTokens.join("|"), "gim")
   
+    
     const filteredListings = listings.filter((listing) => {
-
+      console.log(isbnRegex.test(listing.IBSN))
       return (
         ((searchInput.title != "") && titleRegex.test(listing.title)) ||
         ((searchInput.author != "") && authorRegex.test(listing.author)) ||
