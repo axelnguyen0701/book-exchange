@@ -51,6 +51,7 @@ export default function Home() {
 						i.instantPrice.toString(),
 						"ether"
 					),
+					bidList: i.bidList,
 					tokenId: i.tokenId.toNumber(),
 					seller: i.seller,
 					owner: i.owner,
@@ -75,6 +76,7 @@ export default function Home() {
 		return (
 			<div className="col-md-4" key={i}>
 				<SavedListing
+					seller={e.seller}
 					tokenId={e.tokenId}
 					imgurl={e.image}
 					title={e.title}
@@ -85,6 +87,7 @@ export default function Home() {
 					pricing={e.price}
 					startingPrice={e.startingPrice}
 					retails="90"
+					bidList={e.bidList}
 				/>
 			</div>
 		)

@@ -19,6 +19,7 @@ export default function SavedListing(props) {
 			{e.name}
 		</Typography>
 	))
+
 	return (
 		<Card className="book-card" sx={{ maxWidth: 345 }}>
 			<CardMedia sx={{ height: 290 }} image={props.imgurl} title="Book" />
@@ -64,6 +65,10 @@ export default function SavedListing(props) {
 					title={props.title}
 					pricing={props.pricing}
 					tokenId={props.tokenId}
+					allowBid={props.allowBid}
+					startingPrice={props.startingPrice}
+					bidList={props.bidList}
+					seller={props.seller}
 				></PurchaseDialog>
 
 				<Button size="small" className="option">
