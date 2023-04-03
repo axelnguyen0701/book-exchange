@@ -70,7 +70,9 @@ export default function MyAssets() {
 		<Container>
 			<ResponsiveAppBar />
 			{loadingState === "loaded" && !nfts.length && (
-				<h1 className="py-10 px-20 text-3xl">No NFTs owned</h1>
+				<div className="titleHeader">
+					<h1 className="title">No NFTs owned</h1>
+				</div>
 			)}
 			<div className="flex justify-center">
 				<div className="p-4">
