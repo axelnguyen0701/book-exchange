@@ -57,7 +57,7 @@ export default function SavedListing(props) {
 					{props.allowBid
 						? `Start Price: ${props.startingPrice}`
 						: `Listed ${props.pricing}`}
-					ETH Retails: {props.retails}$
+					ETH
 				</Typography>
 			</CardContent>
 			<CardActions className="button-box">
@@ -73,9 +73,6 @@ export default function SavedListing(props) {
 
 				<Button size="small" className="option">
 					Message
-				</Button>
-				<Button size="small" className="selected-option">
-					Saved
 				</Button>
 			</CardActions>
 		</Card>
