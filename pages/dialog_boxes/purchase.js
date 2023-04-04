@@ -98,6 +98,7 @@ export default function PurchaseDialog({
 		} catch (e) {
 			alert(e.reason)
 		}
+		handleClose()
 	}
 
 	const renderDialog = () => {
@@ -123,7 +124,7 @@ export default function PurchaseDialog({
 							className="dialog-title"
 							id="alert-dialog-title"
 						>
-							Confirm Bidding of {title}?
+							Confirm Bidding for {title}?
 						</DialogTitle>
 						<DialogContent>
 							<BidTable
@@ -133,10 +134,10 @@ export default function PurchaseDialog({
 							/>
 
 							<DialogContentText
-								className="dialog-content"
+								className="table"
 								id="alert-dialog-description"
 							>
-								Starting price is: ${startingPrice} ETH
+								Starting price is: {startingPrice} ETH
 							</DialogContentText>
 							<FormControl fullWidth sx={{ m: 1 }}>
 								<InputLabel htmlFor="outlined-adornment-amount">

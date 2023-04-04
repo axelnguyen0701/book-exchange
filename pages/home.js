@@ -1,4 +1,3 @@
-
 import ResponsiveAppBar from "./navbar"
 import { Container } from "@mui/system"
 import SavedListing from "./listing_cards/savedlisting"
@@ -21,6 +20,9 @@ export default function Home() {
 	useEffect(() => {
 		loadNFTs()
 	}, [])
+
+	// log ethID so we know what to use for chat demo
+	console.log(ethID)
 	async function loadNFTs() {
 		/* create a generic provider and query for unsold market items */
 		const provider = new ethers.providers.JsonRpcProvider()
@@ -104,10 +106,9 @@ export default function Home() {
 		<Container>
 			<ResponsiveAppBar />
 			<div className="titleHeader">
-				<h1 className="title">Your Saved Listings  {ethID}</h1>
+				<h1 className="title">Showing All Listings</h1>
 				<div className="row"> {renderListings()}</div>
 			</div>
 		</Container>
 	)
-
 }

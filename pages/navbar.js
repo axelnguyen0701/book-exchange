@@ -21,7 +21,7 @@ const pages = [
 	{ name: "listings", route: "listings" },
 	{ name: "My Books", route: "mybooks" },
 ]
-const settings = ["Create Listing", "Account", "Sign Out"]
+const settings = ["Create Listing", "Account"]
 
 // Nav bar present across entire site
 function ResponsiveAppBar(props) {

@@ -95,7 +95,7 @@ export default function BidTable({ bidList, seller, tokenId }) {
 	if (bidList.length === 1) {
 		return (
 			<Container>
-				<Typography>No bid has been made</Typography>
+				<div className="titleHeader">No bids made yet</div>
 			</Container>
 		)
 	}

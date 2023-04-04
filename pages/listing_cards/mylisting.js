@@ -50,7 +50,7 @@ export default function MyListing(props) {
 					color="text.secondary"
 					fontWeight="bold"
 				>
-					Listed: {props.pricing}ETH Retails: {props.retails}$
+					Listed: {props.pricing}ETH
 				</Typography>
 			</CardContent>
 		</Card>
